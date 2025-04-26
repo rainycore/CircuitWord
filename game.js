@@ -81,3 +81,11 @@ function clearMessage() {
 
 // Start
 setupBoard();
+
+// Listen for Enter key
+document.getElementById("word-input").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        submitWord();
+    }
+});
+
