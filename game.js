@@ -102,7 +102,7 @@ function validateWord(word) {
         return; // Invalid starting letter
     }
 
-    // 2. Check if all letters are available on the board and haven't been used yet
+    // 2. Check if all letters are available on the board
     const availableLetters = [...topLetters, ...leftLetters, ...rightLetters, ...bottomLetters];
     for (let char of word) {
         // Check if letter exists on the board (redundant if API checks spelling, but safe)
@@ -110,11 +110,13 @@ function validateWord(word) {
             showMessage(`Invalid letter used: "${char}"`);
             return;
         }
-        // Check if the letter has already been used in a previous word
-        if (usedLetters.has(char)) {
-            showMessage(`Letter "${char}" has already been used!`);
-            return;
-        }
+        // --- REMOVED CHECK FOR LETTER ALREADY USED ---
+        // // Check if the letter has already been used in a previous word
+        // if (usedLetters.has(char)) {
+        //     showMessage(`Letter "${char}" has already been used!`);
+        //     return;
+        // }
+        // --- END REMOVED CHECK ---
     }
 
     // 3. Check adjacent letters constraint (must be from different sides)
@@ -135,6 +137,11 @@ function validateWord(word) {
     usedWordsDisplay.innerText = "Used Words: " + usedWords.join(", ");
 
     // 5. Mark letters as used in the game state and update their visual style
+    // NOTE: This part might need adjustment depending on the exact desired "reuse" rule.
+    // Currently, it still adds letters to usedLetters and styles them.
+    // If you want letters to become available again immediately, you might remove
+    // the usedLetters logic entirely or modify how resetLetterStyles works.
+    // For now, we keep it so letters *look* used after being part of *any* word.
     word.split("").forEach(char => {
         usedLetters.add(char); // Add letter to the set of used letters
         const element = document.getElementById(`letter-${char}`);
@@ -236,3 +243,4 @@ wordInput.addEventListener("keypress", function(event) {
 // --- Initial Game Setup ---
 // Call setupBoard() when the script loads to draw the initial game board
 setupBoard();
+
