@@ -36,13 +36,11 @@ function submitWord() {
         return;
     }
 
-    // Rule: If it's not the first word, it must start with the last letter
     if (lastLetter && word[0] !== lastLetter) {
         showMessage(`Word must start with "${lastLetter}"`);
         return;
     }
 
-    // Rule: Must use only available letters
     const availableLetters = [...topLetters, ...leftLetters, ...rightLetters, ...bottomLetters];
     for (let char of word) {
         if (!availableLetters.includes(char)) {
@@ -51,7 +49,15 @@ function submitWord() {
         }
     }
 
-    // (Later: Add real dictionary check here)
+    // Check no two adjacent letters come from the same side
+    for (let i = 0; i < word.length - 1; i++) {
+        const currentSide = findSide(word[i]);
+        const nextSide = findSide(word[i + 1]);
+        if (currentSide === nextSide) {
+            showMessage(`Two adjacent letters "${word[i]}" and "${word[i + 1]}" are from the same side!`);
+            return;
+        }
+    }
 
     usedWords.push(word);
     document.getElementById("used-words").innerText = "Used Words: " + usedWords.join(", ");
