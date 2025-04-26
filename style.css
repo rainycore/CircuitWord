@@ -154,8 +154,7 @@ body {
 }
 
 #message {
-    color: red;
-    font-weight: bold;
+    color: black;
     min-height: 1.2em;
     margin-top: 5px;
     font-size: 0.9em;
