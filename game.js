@@ -189,7 +189,7 @@ function submitWord() {
         .catch(error => {
             // Handle the different types of errors
             if (error.message === 'WordNotFound') {
-                showMessage(`"${word.toUpperCase()}" is not a valid dictionary word!`);
+                showMessage(`Not in word list`);
             } else { // Handle network errors or other HTTP errors
                 showMessage("Error checking word validity. Check connection or API status.");
                 console.error("API Error:", error); // Log the actual error
