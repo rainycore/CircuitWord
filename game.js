@@ -27,6 +27,14 @@ function setupBoard() {
     });
 }
 
+function findSide(letter) {
+    if (topLetters.includes(letter)) return "top";
+    if (leftLetters.includes(letter)) return "left";
+    if (rightLetters.includes(letter)) return "right";
+    if (bottomLetters.includes(letter)) return "bottom";
+    return null;
+}
+
 function submitWord() {
     const input = document.getElementById("word-input");
     const word = input.value.trim().toUpperCase();
