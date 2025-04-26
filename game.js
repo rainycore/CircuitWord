@@ -77,18 +77,19 @@ function submitWord() {
         return;
     }
 
-    fetch(`https://corsproxy.io/?https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Word not found");
-            }
-            return response.json();
-        })
+    fetch(`https://api.datamuse.com/words?sp=${word}&max=1`)
+        .then(response => response.json())
         .then(data => {
+            if (data.length === 0 || data[0].word !== word) {
+                showMessage(`"${word.toUpperCase()}" is not a valid word!`);
+                return;
+            }
+            // Word is valid!
             validateWord(word.toUpperCase());
         })
         .catch(error => {
-            showMessage(`"${word.toUpperCase()}" is not a valid word!`);
+            showMessage("Error checking the word. Try again.");
+            console.error(error);
         });
 }
 
