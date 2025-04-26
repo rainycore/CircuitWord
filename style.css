@@ -9,8 +9,8 @@ body {
     margin: 0;
 }
 
+/* --- Grid Layout for Game Container --- */
 .game-container {
-    position: relative; /* Needed for absolute positioning of canvas/sides */
     width: 450px;
     height: 450px;
     background-color: #fff;
@@ -18,52 +18,64 @@ body {
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     padding: 10px;
     box-sizing: border-box;
-    /* Grid layout might be complex with canvas overlay, revert to absolute/manual */
+    position: relative; /* Needed for canvas positioning */
+
+    /* Set up the 3x3 grid */
+    display: grid;
+    grid-template-rows: 60px 1fr 60px;
+    grid-template-columns: 60px 1fr 60px;
+    grid-template-areas:
+        "top-left top top-right"
+        "left center right"
+        "bottom-left bottom bottom-right";
+    gap: 5px;
 }
 
-/* Canvas for drawing lines */
+/* Canvas for drawing lines - Overlay */
 #line-canvas {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    pointer-events: none; /* Allows clicks to go through to buttons underneath */
-    z-index: 1; /* Behind letters but above background */
+    pointer-events: none; /* Allows clicks to go through */
+    z-index: 1;
 }
 
-
-/* Positioning Sides (Manual/Absolute - adjust values carefully) */
+/* --- Positioning Sides in the Grid --- */
 .side {
-    position: absolute;
     display: flex;
-    z-index: 2; /* Ensure sides are above the canvas */
-}
-
-.horizontal {
-    width: calc(100% - 100px); /* Width between vertical sides */
-    left: 50px; /* Gap from edge */
+    align-items: center;
     justify-content: space-around;
+    z-index: 2; /* Above canvas */
+    /* border: 1px dashed lightgrey; /* Optional: for visualizing areas */
 }
 
-.vertical {
-    height: calc(100% - 100px); /* Height between horizontal sides */
-    top: 50px; /* Gap from edge */
+#top-side { grid-area: top; }
+#bottom-side { grid-area: bottom; }
+#left-side { grid-area: left; flex-direction: column; }
+#right-side { grid-area: right; flex-direction: column; }
+
+/* --- Center Area --- */
+.center-display {
+    grid-area: center;
+    display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: center;
+    align-items: center;
+    padding: 10px; /* Reduced padding */
+    box-sizing: border-box;
+    overflow: hidden;
+    z-index: 5; /* Above letters */
+    background-color: rgba(255, 255, 255, 0.85);
+    border-radius: 8px;
 }
 
-#top-side { top: 10px; } /* Position near top edge */
-#bottom-side { bottom: 10px; } /* Position near bottom edge */
-#left-side { left: 10px; } /* Position near left edge */
-#right-side { right: 10px; } /* Position near right edge */
-
-
-/* Letter Buttons - Now actual buttons */
+/* --- Letter Button Styling --- */
 .letter-button {
     border: 1px solid #ccc;
-    padding: 0; /* Remove padding if using fixed size */
-    width: 40px;  /* Fixed size for easier positioning */
+    padding: 0;
+    width: 40px;
     height: 40px;
     display: flex;
     justify-content: center;
@@ -73,89 +85,72 @@ body {
     background-color: #eee;
     font-weight: bold;
     font-size: 1.2em;
-    cursor: pointer; /* Make it look clickable */
-    margin: 5px;
+    cursor: pointer;
+    margin: 2px;
     box-sizing: border-box;
     transition: background-color 0.2s, transform 0.1s;
-    z-index: 3; /* Above canvas */
+    z-index: 3; /* Above canvas, below center */
 }
+.letter-button:hover { background-color: #ddd; }
+.letter-button:active { transform: scale(0.95); }
+.letter-button.selected { background-color: #aae; color: white; }
+.letter-button.last-selected { border: 2px solid #55f; }
 
-.letter-button:hover {
-    background-color: #ddd;
-}
-.letter-button:active {
-    transform: scale(0.95); /* Click feedback */
-}
-
-/* Style for the currently selected letter */
-.letter-button.selected {
-    background-color: #aae; /* Example selected color */
-    color: white;
-}
-/* Style for the last selected letter (optional) */
-.letter-button.last-selected {
-     border: 2px solid #55f;
-}
-
-
-/* Center Display Area */
-.center-display {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    width: 60%; /* Adjust as needed */
-    z-index: 5; /* Above everything else */
-    background-color: rgba(255, 255, 255, 0.8); /* Slight background */
-    padding: 15px;
-    border-radius: 8px;
-}
-
+/* --- Styling for Center Elements --- */
 #current-word-display {
-    font-size: 1.5em;
+    font-size: 1.3em; /* Adjusted size */
     font-weight: bold;
-    min-height: 1.5em;
-    margin-bottom: 15px;
+    min-height: 1.3em;
+    margin-bottom: 8px;
     letter-spacing: 2px;
     border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
+    padding-bottom: 5px;
+    color: #555;
+    width: 100%; /* Take full width */
+    box-sizing: border-box;
 }
-#current-word-display span { /* The actual word */
-    color: #0056b3;
+#current-word-display span { color: #0056b3; }
+
+#word-input-typed {
+    width: calc(100% - 22px);
+    padding: 8px; /* Adjusted padding */
+    margin-bottom: 8px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 0.9em; /* Adjusted size */
 }
 
+.controls {
+    margin-bottom: 8px;
+}
 .controls button {
     padding: 8px 12px;
     cursor: pointer;
     border: none;
-    background-color: #6c757d; /* Grey buttons */
+    background-color: #6c757d;
     color: white;
     border-radius: 5px;
-    margin: 0 5px 10px 5px; /* Spacing */
+    margin: 0 5px;
     transition: background-color 0.2s;
+    font-size: 0.9em;
 }
-.controls button:hover {
-    background-color: #5a6268;
-}
-#submit-button {
-     background-color: #28a745; /* Green submit */
-}
-#submit-button:hover {
-     background-color: #218838;
-}
-
+.controls button:hover { background-color: #5a6268; }
+#submit-button { background-color: #28a745; }
+#submit-button:hover { background-color: #218838; }
 
 #used-words {
-    font-size: 0.9em;
+    font-size: 0.85em; /* Adjusted size */
     color: #555;
     margin-bottom: 5px;
     word-wrap: break-word;
-    max-height: 60px;
+    max-height: 45px; /* Adjust height */
+    width: 100%;
     overflow-y: auto;
     text-align: left;
     padding: 5px;
     border: 1px dashed #eee;
+    box-sizing: border-box;
 }
 
 #message {
@@ -163,4 +158,5 @@ body {
     font-weight: bold;
     min-height: 1.2em;
     margin-top: 5px;
+    font-size: 0.9em;
 }
