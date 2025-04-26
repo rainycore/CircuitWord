@@ -70,7 +70,7 @@ function validateWord(word) {
 
 function submitWord() {
     const input = document.getElementById("word-input");
-    const word = input.value.trim().toLowerCase(); // note: API expects lowercase
+    const word = input.value.trim().toLowerCase(); // lowercase for API
 
     if (word.length < 3) {
         showMessage("Word too short!");
@@ -85,11 +85,11 @@ function submitWord() {
             return response.json();
         })
         .then(data => {
-            // Real word. Now check other game rules
-            validateWord(word.toUpperCase()); // <-- pass word to another function
+            // Word is valid, continue validating game rules
+            validateWord(word.toUpperCase()); // convert to UPPERCASE because our board letters are uppercase
         })
         .catch(error => {
-            showMessage(`"${word}" is not a valid word!`);
+            showMessage(`"${word.toUpperCase()}" is not a valid word!`);
         });
 }
 
