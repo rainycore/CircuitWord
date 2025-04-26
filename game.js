@@ -163,12 +163,12 @@ function validateWordRules(word) {
     if (!word || word.length < 3) { showMessage("Word must be at least 3 letters long!"); return false; }
     if (!/^[A-Z]+$/.test(word)) { showMessage("Word must contain only letters."); return false; }
     if (lastLetterOfPreviousWord && word[0] !== lastLetterOfPreviousWord) { showMessage(`Word must start with "${lastLetterOfPreviousWord}"`); return false; }
-    for (let char of word) { if (!allAvailableLetters.includes(char)) { showMessage(`Letter "${char}" is not available on the board.`); return false; } }
+    for (let char of word) { if (!allAvailableLetters.includes(char)) { showMessage(`Letter "${char}" is not available on the board`); return false; } }
     for (let i = 0; i < word.length - 1; i++) {
         const currentSide = findSide(word[i]);
         const nextSide = findSide(word[i + 1]);
         if (!currentSide || !nextSide) { console.error("Could not find side for letter:", word[i], word[i+1]); showMessage("Internal error validating sides."); return false; }
-        if (currentSide === nextSide) { showMessage(`Adjacent letters "${word[i]}" and "${word[i + 1]}" are from the same side!`); return false; }
+        if (currentSide === nextSide) { showMessage(`Adjacent letters cannot be from the same side`); return false; }
     }
     if (usedWords.includes(word)) { showMessage(`Word "${word}" has already been used!`); return false; }
     return true; // Passed all game rules
