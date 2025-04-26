@@ -70,14 +70,14 @@ function validateWord(word) {
 
 function submitWord() {
     const input = document.getElementById("word-input");
-    const word = input.value.trim().toLowerCase(); // lowercase for API
+    const word = input.value.trim().toLowerCase();
 
     if (word.length < 3) {
         showMessage("Word too short!");
         return;
     }
 
-    fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
+    fetch(`https://corsproxy.io/?https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error("Word not found");
@@ -85,14 +85,12 @@ function submitWord() {
             return response.json();
         })
         .then(data => {
-            // Word is valid, continue validating game rules
-            validateWord(word.toUpperCase()); // convert to UPPERCASE because our board letters are uppercase
+            validateWord(word.toUpperCase());
         })
         .catch(error => {
             showMessage(`"${word.toUpperCase()}" is not a valid word!`);
         });
 }
-
 
 function restartGame() {
     usedWords = [];
