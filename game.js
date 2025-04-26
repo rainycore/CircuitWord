@@ -102,29 +102,12 @@ function validateWord(word) {
         return; // Invalid starting letter
     }
 
-    // 2. Check if all letters are available on the board
-    const availableLetters = [...topLetters, ...leftLetters, ...rightLetters, ...bottomLetters];
-    for (let char of word) {
-        // Check if letter exists on the board (redundant if API checks spelling, but safe)
-        if (!availableLetters.includes(char)) {
-            showMessage(`Invalid letter used: "${char}"`);
-            return;
-        }
-        // --- REMOVED CHECK FOR LETTER ALREADY USED ---
-        // // Check if the letter has already been used in a previous word
-        // if (usedLetters.has(char)) {
-        //     showMessage(`Letter "${char}" has already been used!`);
-        //     return;
-        // }
-        // --- END REMOVED CHECK ---
-    }
-
     // 3. Check adjacent letters constraint (must be from different sides)
     for (let i = 0; i < word.length - 1; i++) {
         const currentSide = findSide(word[i]);
         const nextSide = findSide(word[i + 1]);
         // Check if both letters were found and if they are on the same side
-        if (currentSide && nextSide && currentSide === nextSide) {
+        if (currentSide == nextSide) {
             showMessage(`Adjacent letters "${word[i]}" and "${word[i + 1]}" are from the same side!`);
             return; // Invalid adjacent letters
         }
@@ -188,7 +171,7 @@ function submitWord() {
             // data.length === 0 means no match found
             // data[0].word !== word means the best match isn't the exact word entered
             if (data.length === 0 || data[0].word !== word) {
-                showMessage(`"${word.toUpperCase()}" is not a valid word!`);
+                showMessage(`Not in word list`);
                 return; // Stop if not a real word
             }
             // Word is valid according to API, proceed with game rule validation
