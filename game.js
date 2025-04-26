@@ -1,36 +1,40 @@
 // --- Game Setup ---
-// Define the letters available on each side of the board
 const topLetters = ['A', 'T', 'E'];
 const leftLetters = ['M', 'P', 'S'];
 const rightLetters = ['R', 'O', 'N'];
 const bottomLetters = ['C', 'I', 'D'];
-// Store all letters grouped by side for easy lookup
-const allSides = {
-    top: topLetters,
-    left: leftLetters,
-    right: rightLetters,
-    bottom: bottomLetters
-};
+const allSides = { top: topLetters, left: leftLetters, right: rightLetters, bottom: bottomLetters };
 
 // --- Game State Variables ---
-let usedWords = []; // Array to store valid words played
-let usedLetters = new Set(); // Set to store unique letters used across all words
-let lastLetter = null; // Stores the last letter of the previously played word
+let usedWords = [];
+let currentWord = ""; // String to hold the word being built
+let currentPath = []; // Array to store {letter, element, x, y} objects for line drawing
+let lastLetterOfPreviousWord = null; // Renamed from lastLetter for clarity
 
 // --- DOM Element References ---
-// Get references to HTML elements needed for interaction
-const wordInput = document.getElementById("word-input");
+const currentWordSpan = document.querySelector("#current-word-display span");
 const usedWordsDisplay = document.getElementById("used-words");
 const messageDisplay = document.getElementById("message");
+const lineCanvas = document.getElementById("line-canvas");
+const ctx = lineCanvas.getContext("2d");
 
 // --- Functions ---
 
 /**
- * Creates the letter buttons and displays them on the board.
- * Also resets the visual state of letters based on usedLetters.
+ * Sets canvas dimensions based on its container.
+ */
+function resizeCanvas() {
+    const container = lineCanvas.parentElement; // Assumes canvas is direct child of game-container
+    lineCanvas.width = container.clientWidth;
+    lineCanvas.height = container.clientHeight;
+    // Redraw lines if needed after resize (optional)
+     redrawLines();
+}
+
+/**
+ * Creates the letter buttons and adds click listeners.
  */
 function setupBoard() {
-    // Define the structure for iterating through sides
     const sides = [
         { id: "top-side", letters: topLetters },
         { id: "left-side", letters: leftLetters },
@@ -38,180 +42,234 @@ function setupBoard() {
         { id: "bottom-side", letters: bottomLetters }
     ];
 
-    // Populate each side container with letter buttons
     sides.forEach(side => {
         const container = document.getElementById(side.id);
-        if (!container) {
-            console.error(`Container not found: ${side.id}`);
-            return; // Skip if container doesn't exist
-        }
-        container.innerHTML = ""; // Clear previous letters from the container
+        if (!container) return;
+        container.innerHTML = ""; // Clear previous
         side.letters.forEach(letter => {
-            const div = document.createElement("div");
-            div.className = "letter-button"; // Assign class for styling
-            div.innerText = letter;
-            div.id = `letter-${letter}`; // Assign unique ID for styling used letters
-            container.appendChild(div);
+            const button = document.createElement("button"); // Use BUTTON element
+            button.className = "letter-button";
+            button.innerText = letter;
+            button.id = `letter-${letter}`;
+            button.onclick = () => handleLetterClick(letter, button); // Add click handler
+            container.appendChild(button);
         });
     });
-
-    // Ensure all letter buttons reflect the current usedLetters state
-    resetLetterStyles();
+    resizeCanvas(); // Set initial canvas size
 }
-
-/**
- * Updates the visual style of all letter buttons based on the usedLetters set.
- */
-function resetLetterStyles() {
-    const allLetterButtons = document.querySelectorAll('.letter-button');
-    allLetterButtons.forEach(button => {
-        const letter = button.innerText;
-        if (usedLetters.has(letter)) {
-            button.classList.add('used-letter'); // Apply 'used' style
-        } else {
-            button.classList.remove('used-letter'); // Remove 'used' style
-        }
-    });
-}
-
 
 /**
  * Finds which side a letter belongs to.
  * @param {string} letter - The uppercase letter to find.
- * @returns {string|null} The side name ('top', 'left', 'right', 'bottom') or null if not found.
+ * @returns {string|null} The side name ('top', 'left', 'right', 'bottom') or null.
  */
 function findSide(letter) {
-    // Iterate through the side definitions
     for (const sideName in allSides) {
-        // Check if the letter exists in the current side's array
         if (allSides[sideName].includes(letter)) {
-            return sideName; // Return the name of the side
+            return sideName;
         }
     }
-    return null; // Should not happen if letter validation is correct
+    return null;
 }
 
 /**
- * Validates the submitted word based on game rules AFTER it has been verified as a real word by the API.
- * @param {string} word - The uppercase word to validate.
+ * Handles clicking on a letter button.
+ * @param {string} letter - The letter that was clicked.
+ * @param {HTMLElement} buttonElement - The button element that was clicked.
  */
-function validateWord(word) {
-    // 1. Check starting letter constraint (if not the first word)
-    if (lastLetter && word[0] !== lastLetter) {
-        showMessage(`Word must start with "${lastLetter}"`);
-        return; // Invalid starting letter
+function handleLetterClick(letter, buttonElement) {
+    clearMessage(); // Clear previous messages
+
+    // Rule: Cannot click the same letter twice in a row (implicit in Letter Boxed)
+    if (currentPath.length > 0 && currentPath[currentPath.length - 1].letter === letter) {
+        return; // Ignore click if it's the same as the last letter
     }
 
-    // 2. Check if all letters are available on the board
-    const availableLetters = [...topLetters, ...leftLetters, ...rightLetters, ...bottomLetters];
-    for (let char of word) {
-        // Check if letter exists on the board (redundant if API checks spelling, but safe)
-        if (!availableLetters.includes(char)) {
-            showMessage(`Invalid letter used: "${char}"`);
+    // Rule: Cannot click a letter from the same side as the previous letter
+    if (currentPath.length > 0) {
+        const previousLetter = currentPath[currentPath.length - 1].letter;
+        if (findSide(letter) === findSide(previousLetter)) {
+            showMessage(`Cannot use two letters ("${previousLetter}", "${letter}") from the same side consecutively.`);
             return;
         }
-        // Letter reuse is allowed based on previous change (no check here)
     }
 
-    // 3. Check adjacent letters constraint (must be from different sides)
-    for (let i = 0; i < word.length - 1; i++) {
-        const currentSide = findSide(word[i]);
-        const nextSide = findSide(word[i + 1]);
-        // Check if both letters were found and if they are on the same side
-        if (currentSide && nextSide && currentSide === nextSide) {
-            showMessage(`Adjacent letters "${word[i]}" and "${word[i + 1]}" are from the same side!`);
-            return; // Invalid adjacent letters
-        }
+    // Rule: First letter must match the end of the previous word (if applicable)
+    if (currentWord === "" && lastLetterOfPreviousWord && letter !== lastLetterOfPreviousWord) {
+         showMessage(`Word must start with "${lastLetterOfPreviousWord}"`);
+         return;
     }
 
-    // --- Word is valid according to game rules ---
+    // Add letter to current word and path
+    currentWord += letter;
+    const rect = buttonElement.getBoundingClientRect();
+    const canvasRect = lineCanvas.getBoundingClientRect();
+    // Calculate center coordinates relative to the canvas
+    const x = rect.left + rect.width / 2 - canvasRect.left;
+    const y = rect.top + rect.height / 2 - canvasRect.top;
 
-    // 4. Add word to the used list and update the display
-    usedWords.push(word);
-    usedWordsDisplay.innerText = "Used Words: " + usedWords.join(", ");
+    currentPath.push({ letter: letter, element: buttonElement, x: x, y: y });
 
-    // 5. Mark letters as used in the game state and update their visual style
-    word.split("").forEach(char => {
-        usedLetters.add(char); // Add letter to the set of used letters
-        const element = document.getElementById(`letter-${char}`);
-        if (element) {
-            element.classList.add("used-letter"); // Apply CSS class
+    // Update display and draw lines
+    updateCurrentWordDisplay();
+    redrawLines();
+
+    // Optional: Highlight selected letters
+    highlightPath();
+}
+
+/**
+ * Updates the display showing the word currently being built.
+ */
+function updateCurrentWordDisplay() {
+    currentWordSpan.innerText = currentWord;
+}
+
+/**
+ * Clears the canvas and redraws lines based on the currentPath.
+ */
+function redrawLines() {
+    ctx.clearRect(0, 0, lineCanvas.width, lineCanvas.height); // Clear canvas
+    if (currentPath.length < 2) return; // Need at least two points for a line
+
+    ctx.beginPath();
+    ctx.moveTo(currentPath[0].x, currentPath[0].y);
+    ctx.lineWidth = 3; // Line thickness
+    ctx.strokeStyle = "#55f"; // Line color (blue)
+
+    for (let i = 1; i < currentPath.length; i++) {
+        ctx.lineTo(currentPath[i].x, currentPath[i].y);
+    }
+    ctx.stroke(); // Draw the path
+}
+
+/**
+ * Highlights the buttons in the current path (optional styling).
+ */
+ function highlightPath() {
+    // Remove previous highlights
+    document.querySelectorAll('.letter-button.selected, .letter-button.last-selected').forEach(el => {
+        el.classList.remove('selected', 'last-selected');
+    });
+    // Add highlight to current path
+    currentPath.forEach((point, index) => {
+        point.element.classList.add('selected');
+        // Add special style to the last letter
+        if(index === currentPath.length - 1){
+            point.element.classList.add('last-selected');
         }
     });
+ }
 
-    // 6. Update the last letter constraint for the next word
-    lastLetter = word[word.length - 1];
-
-    // 7. Clear the input field and any previous messages
-    wordInput.value = "";
+/**
+ * Clears the currently formed word and path.
+ */
+function clearCurrentWord() {
+    currentWord = "";
+    currentPath = [];
+    updateCurrentWordDisplay();
+    redrawLines(); // Clears the canvas
+    highlightPath(); // Clears highlights
     clearMessage();
 }
 
 /**
- * Handles word submission: checks length, calls API for validity, then calls game validation.
+ * Validates the completed word (game rules, excluding API check).
+ * @param {string} word - The uppercase word to validate.
+ * @returns {boolean} True if valid according to game rules, false otherwise.
  */
-function submitWord() {
-    // Get word, trim whitespace, convert to lowercase for API check
-    const word = wordInput.value.trim().toLowerCase();
-
-    // Basic length check
+function validateWordRules(word) {
+    // Rule: Word length
     if (word.length < 3) {
         showMessage("Word must be at least 3 letters long!");
-        return;
+        return false;
     }
 
-    // Basic check for non-alphabetic characters
-    if (!/^[a-z]+$/.test(word)) {
-         showMessage("Word must contain only letters.");
-         return;
+    // Rule: First letter must match the end of the previous word
+    if (lastLetterOfPreviousWord && word[0] !== lastLetterOfPreviousWord) {
+        showMessage(`Word must start with "${lastLetterOfPreviousWord}"`);
+        return false;
     }
 
-    showMessage("Checking word..."); // Provide feedback to the user
+    // Rule: Adjacent letters from different sides (already enforced by handleLetterClick, but good to double-check)
+    for (let i = 0; i < word.length - 1; i++) {
+        const currentSide = findSide(word[i]);
+        const nextSide = findSide(word[i + 1]);
+        if (!currentSide || !nextSide || currentSide === nextSide) {
+             // This check should ideally not fail if handleLetterClick is correct
+            console.error("Adjacent letter rule failed validation - check handleLetterClick logic");
+            showMessage(`Invalid sequence: "${word[i]}" and "${word[i+1]}"`);
+            return false;
+        }
+    }
+    return true; // Passed all game rules
+}
+
+/**
+ * Handles word submission: checks game rules, calls API, updates game state.
+ */
+function submitCurrentWord() {
+    const wordToSubmit = currentWord; // Get word from clicks
+
+    // Check game rules first
+    if (!validateWordRules(wordToSubmit)) {
+        return; // Stop if basic game rules fail
+    }
+
+    showMessage("Checking dictionary..."); // Provide feedback
 
     // --- API Call Section using DictionaryAPI.dev ---
-    fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
+    fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${wordToSubmit.toLowerCase()}`)
         .then(response => {
-            // Check the HTTP status code
-            if (response.ok) { // Status 200-299 means success (word found)
-                return response.json(); // Parse the JSON data (though we might not need it)
-            } else if (response.status === 404) { // Status 404 means word not found
-                throw new Error('WordNotFound'); // Throw a specific error type
-            } else { // Other HTTP errors (e.g., 500 server error)
+            if (response.ok) {
+                return response.json();
+            } else if (response.status === 404) {
+                throw new Error('WordNotFound');
+            } else {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
         })
         .then(data => {
-            // If we reach here, the response status was OK (2xx), meaning the word exists
-            console.log("API Data for valid word:", data); // Optional: view the definition data
-            clearMessage(); // Clear "Checking word..." message
-            validateWord(word.toUpperCase()); // Proceed with game logic validation
+            // Word exists in dictionary
+            console.log("API Data for valid word:", data);
+            clearMessage();
+
+            // --- Update Game State ---
+            usedWords.push(wordToSubmit);
+            usedWordsDisplay.innerText = "Used Words: " + usedWords.join(", ");
+            lastLetterOfPreviousWord = wordToSubmit[wordToSubmit.length - 1]; // Update constraint
+
+            // Clear current word for next turn
+            clearCurrentWord();
+
+            // Check for win condition (optional)
+            // e.g., if all letters from all sides have been used at least once
         })
         .catch(error => {
-            // Handle the different types of errors
             if (error.message === 'WordNotFound') {
-                showMessage(`Not in word list`);
-            } else { // Handle network errors or other HTTP errors
-                showMessage("Error checking word validity. Check connection or API status.");
-                console.error("API Error:", error); // Log the actual error
+                showMessage(`"${wordToSubmit}" is not a valid dictionary word!`);
+            } else {
+                showMessage("Error checking word validity. Check connection?");
+                console.error("API Error:", error);
             }
+             // Don't clear the word if API check fails, allow user to Clear manually
         });
 }
 
+
 /**
- * Resets the game state to its initial values and redraws the board.
+ * Resets the entire game state.
  */
 function restartGame() {
-    usedWords = []; // Clear used words array
-    usedLetters.clear(); // Clear used letters set
-    lastLetter = null; // Reset last letter constraint
-    wordInput.value = ""; // Clear input field
-    usedWordsDisplay.innerText = "Used Words:"; // Reset display
-    clearMessage(); // Clear any error messages
-    setupBoard(); // Redraw board to reset letter styles
+    usedWords = [];
+    lastLetterOfPreviousWord = null;
+    usedWordsDisplay.innerText = "Used Words:";
+    clearCurrentWord(); // Clears current word, path, canvas, highlights, message
+    // No need to call setupBoard unless letters change
 }
 
 /**
- * Displays a message to the user in the message area.
+ * Displays a message to the user.
  * @param {string} msg - The message to display.
  */
 function showMessage(msg) {
@@ -226,16 +284,9 @@ function clearMessage() {
 }
 
 // --- Event Listeners ---
-
-// Add event listener for the 'Enter' key on the input field
-wordInput.addEventListener("keypress", function(event) {
-    // Check if the key pressed was 'Enter'
-    if (event.key === "Enter") {
-        event.preventDefault(); // Prevent default form submission behavior (if inside a form)
-        submitWord(); // Call the submit function
-    }
-});
+// Add listener for window resize to adjust canvas
+window.addEventListener('resize', resizeCanvas);
 
 // --- Initial Game Setup ---
-// Call setupBoard() when the script loads to draw the initial game board
-setupBoard();
+setupBoard(); // Draw the initial board and set canvas size
+
