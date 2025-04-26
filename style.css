@@ -74,3 +74,10 @@ body {
     height: 40px;
     cursor: pointer;
 }
+
+.used-letter {
+    background: lightgray;
+    color: darkgray;
+    text-decoration: line-through;
+}
+
