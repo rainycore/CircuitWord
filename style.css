@@ -1,0 +1,76 @@
+body {
+    background: white;
+    font-family: sans-serif;
+    text-align: center;
+}
+
+.game-container {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    margin: 50px auto;
+    border: 2px solid black;
+}
+
+.side {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.horizontal {
+    flex-direction: row;
+}
+
+.vertical {
+    flex-direction: column;
+}
+
+#top-side, #bottom-side {
+    position: absolute;
+    width: 100%;
+    height: 50px;
+}
+
+#top-side {
+    top: 0;
+}
+
+#bottom-side {
+    bottom: 0;
+}
+
+#left-side, #right-side {
+    position: absolute;
+    width: 50px;
+    height: 100%;
+}
+
+#left-side {
+    left: 0;
+}
+
+#right-side {
+    right: 0;
+}
+
+.center {
+    position: absolute;
+    top: 25%;
+    left: 25%;
+    width: 50%;
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.letter-button {
+    background: none;
+    border: 1px solid black;
+    font-size: 20px;
+    margin: 5px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+}
