@@ -29,23 +29,7 @@ function setupBoard() {
 }
 
 
-function findSide(letter) {
-    if (topLetters.includes(letter)) return "top";
-    if (leftLetters.includes(letter)) return "left";
-    if (rightLetters.includes(letter)) return "right";
-    if (bottomLetters.includes(letter)) return "bottom";
-    return null;
-}
-
-function submitWord() {
-    const input = document.getElementById("word-input");
-    const word = input.value.trim().toUpperCase();
-
-    if (word.length < 3) {
-        showMessage("Word too short!");
-        return;
-    }
-
+function validateWord(word) {
     if (lastLetter && word[0] !== lastLetter) {
         showMessage(`Word must start with "${lastLetter}"`);
         return;
@@ -59,7 +43,6 @@ function submitWord() {
         }
     }
 
-    // Check adjacent side rule
     for (let i = 0; i < word.length - 1; i++) {
         const currentSide = findSide(word[i]);
         const nextSide = findSide(word[i + 1]);
@@ -71,8 +54,6 @@ function submitWord() {
 
     usedWords.push(word);
     document.getElementById("used-words").innerText = "Used Words: " + usedWords.join(", ");
-
-    // Mark letters as used
     word.split("").forEach(char => {
         usedLetters.add(char);
         const element = document.getElementById(`letter-${char}`);
@@ -82,8 +63,34 @@ function submitWord() {
     });
 
     lastLetter = word[word.length - 1];
-    input.value = "";
+    document.getElementById("word-input").value = "";
     clearMessage();
+}
+
+
+function submitWord() {
+    const input = document.getElementById("word-input");
+    const word = input.value.trim().toLowerCase(); // note: API expects lowercase
+
+    if (word.length < 3) {
+        showMessage("Word too short!");
+        return;
+    }
+
+    fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Word not found");
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Real word. Now check other game rules
+            validateWord(word.toUpperCase()); // <-- pass word to another function
+        })
+        .catch(error => {
+            showMessage(`"${word}" is not a valid word!`);
+        });
 }
 
 
