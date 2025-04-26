@@ -170,7 +170,7 @@ function validateWordRules(word) {
         if (!currentSide || !nextSide) { console.error("Could not find side for letter:", word[i], word[i+1]); showMessage("Internal error validating sides."); return false; }
         if (currentSide === nextSide) { showMessage(`Adjacent letters cannot be from the same side`); return false; }
     }
-    if (usedWords.includes(word)) { showMessage(`Word "${word}" has already been used!`); return false; }
+    if (usedWords.includes(word)) { showMessage(`This word has already been used`); return false; }
     return true; // Passed all game rules
 }
 
