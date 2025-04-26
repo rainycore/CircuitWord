@@ -190,7 +190,7 @@ function checkWordWithAPI(wordToCheck) {
             throw new Error(`HTTP error! status: ${response.status}`);
         })
         .catch(error => {
-            if (error.message === 'WordNotFound') { showMessage(`"${wordToCheck.toUpperCase()}" is not a valid dictionary word!`); }
+            if (error.message === 'WordNotFound') { showMessage(`Not in word list.`); }
             else { showMessage("Error checking word validity. Check connection?"); console.error("API Error:", error); }
             return Promise.reject(error);
         });
