@@ -22,10 +22,12 @@ function setupBoard() {
             const div = document.createElement("div");
             div.className = "letter-button";
             div.innerText = letter;
+            div.id = `letter-${letter}`; 
             container.appendChild(div);
         });
     });
 }
+
 
 function findSide(letter) {
     if (topLetters.includes(letter)) return "top";
@@ -57,7 +59,7 @@ function submitWord() {
         }
     }
 
-    // Check no two adjacent letters come from the same side
+    // Check adjacent side rule
     for (let i = 0; i < word.length - 1; i++) {
         const currentSide = findSide(word[i]);
         const nextSide = findSide(word[i + 1]);
@@ -69,11 +71,21 @@ function submitWord() {
 
     usedWords.push(word);
     document.getElementById("used-words").innerText = "Used Words: " + usedWords.join(", ");
-    usedLetters = new Set([...usedLetters, ...word.split("")]);
+
+    // Mark letters as used
+    word.split("").forEach(char => {
+        usedLetters.add(char);
+        const element = document.getElementById(`letter-${char}`);
+        if (element) {
+            element.classList.add("used-letter");
+        }
+    });
+
     lastLetter = word[word.length - 1];
     input.value = "";
     clearMessage();
 }
+
 
 function restartGame() {
     usedWords = [];
