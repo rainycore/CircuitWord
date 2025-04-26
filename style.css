@@ -1,117 +1,159 @@
 body {
     font-family: sans-serif;
     display: flex;
-    justify-content: center; /* Center game container horizontally */
-    align-items: center;    /* Center game container vertically */
-    min-height: 100vh;      /* Ensure body takes full viewport height */
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
     background-color: #f0f0f0;
-    margin: 0; /* Remove default body margin */
+    margin: 0;
 }
 
+/* --- Grid Layout for Game Container --- */
 .game-container {
-    position: relative; /* Needed for absolute positioning of children */
-    width: 400px;
-    height: 400px;
+    width: 450px; /* Increased size slightly */
+    height: 450px;
     background-color: #fff;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Add subtle shadow */
-    padding: 20px;
-    box-sizing: border-box; /* Include padding in width/height calculation */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 10px; /* Reduced padding slightly */
+    box-sizing: border-box;
+
+    /* Set up the 3x3 grid */
+    display: grid;
+    /* Define rows: top letters, center area, bottom letters */
+    /* Adjust row heights as needed, e.g., 'auto' or fixed px */
+    grid-template-rows: 60px 1fr 60px;
+    /* Define columns: left letters, center area, right letters */
+    grid-template-columns: 60px 1fr 60px;
+    /* Define areas for easier placement */
+    grid-template-areas:
+        "top-left top top-right"
+        "left center right"
+        "bottom-left bottom bottom-right";
+    gap: 5px; /* Add small gap between grid areas */
 }
 
+/* --- Positioning Sides in the Grid --- */
 .side {
-    position: absolute; /* Position sides relative to game-container */
     display: flex;
-    justify-content: space-around; /* Distribute letters evenly */
-    align-items: center;
+    align-items: center; /* Vertically center items in the flex container */
+    justify-content: space-around; /* Distribute items along the main axis */
+    /* border: 1px dashed lightgrey; /* Optional: for visualizing areas */
 }
 
-.horizontal {
-    width: calc(100% - 40px); /* Full width minus container padding */
-    height: 50px;
-    left: 20px; /* Align with container padding */
+#top-side {
+    grid-area: top; /* Place in the 'top' grid area */
+    /* justify-content: space-around; /* Already default for .side */
 }
 
-.vertical {
-    width: 50px;
-    height: calc(100% - 40px - 100px); /* Full height minus padding and top/bottom sides */
-    top: 70px; /* Position below top side (50px) + padding (20px) */
+#bottom-side {
+    grid-area: bottom; /* Place in the 'bottom' grid area */
+    /* justify-content: space-around; */
+}
+
+#left-side {
+    grid-area: left; /* Place in the 'left' grid area */
     flex-direction: column; /* Stack letters vertically */
+    /* justify-content: space-around; */ /* Distributes vertically due to flex-direction */
 }
 
-/* Position each side */
-#top-side { top: 20px; }
-#bottom-side { bottom: 20px; }
-#left-side { left: 20px; }
-#right-side { right: 20px; }
+#right-side {
+    grid-area: right; /* Place in the 'right' grid area */
+    flex-direction: column; /* Stack letters vertically */
+    /* justify-content: space-around; */ /* Distributes vertically */
+}
 
+/* --- Center Area --- */
+.center {
+    grid-area: center; /* Place in the 'center' grid area */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center items vertically */
+    align-items: center; /* Center items horizontally */
+    padding: 15px;
+    box-sizing: border-box;
+    overflow: hidden; /* Prevent content spillover */
+}
+
+/* --- Letter Button Styling --- */
 .letter-button {
     border: 1px solid #ccc;
     padding: 10px;
-    min-width: 30px; /* Ensure minimum size */
+    min-width: 35px; /* Slightly larger buttons */
+    min-height: 35px;
+    display: flex; /* Use flex to center text inside */
+    justify-content: center;
+    align-items: center;
     text-align: center;
     border-radius: 5px;
     background-color: #eee;
     font-weight: bold;
-    cursor: default; /* Indicate they aren't directly clickable */
-    margin: 5px; /* Spacing around letters */
-    transition: background-color 0.2s, color 0.2s; /* Smooth transition for used state */
+    cursor: default;
+    margin: 2px; /* Reduced margin slightly */
+    box-sizing: border-box;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .used-letter {
-    background-color: #d3d3d3; /* Grey out used letters */
+    background-color: #d3d3d3;
     color: #777;
-    text-decoration: line-through; /* Strike through used letters */
+    text-decoration: line-through;
 }
 
-.center {
-    position: absolute; /* Position center relative to game-container */
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%); /* Center element precisely */
-    text-align: center;
-    width: 70%; /* Adjust width of the central control area */
-}
-
+/* --- Styling for Center Elements --- */
 .center input {
-    width: calc(100% - 22px); /* Full width minus padding/border */
+    width: calc(100% - 22px);
     padding: 10px;
     margin-bottom: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    box-sizing: border-box; /* Include padding/border in width */
+    box-sizing: border-box;
 }
 
 .center button {
     padding: 10px 15px;
     cursor: pointer;
     border: none;
-    background-color: #007bff; /* Blue button */
+    background-color: #007bff;
     color: white;
     border-radius: 5px;
     margin-bottom: 10px;
-    margin-left: 5px; /* Add slight spacing between buttons */
+    margin-left: 5px;
     margin-right: 5px;
-    transition: background-color 0.2s; /* Smooth hover effect */
+    transition: background-color 0.2s;
 }
  .center button:hover {
-    background-color: #0056b3; /* Darker blue on hover */
+    background-color: #0056b3;
  }
 
 #used-words {
     font-size: 0.9em;
     color: #555;
     margin-bottom: 5px;
-    word-wrap: break-word; /* Prevent long list from overflowing */
-    max-height: 50px; /* Limit height and allow scrolling if needed */
-    overflow-y: auto; /* Add scrollbar if list gets too long */
-    text-align: left; /* Align list to the left */
+    word-wrap: break-word;
+    max-height: 40px; /* Adjust height */
+    width: 100%; /* Take full width of center */
+    overflow-y: auto;
+    text-align: left;
     padding: 5px;
-    border: 1px dashed #eee; /* Optional border */
+    border: 1px dashed #eee;
+    box-sizing: border-box;
 }
 
 #message {
     color: red;
     font-weight: bold;
-    min-height: 1.2em; /* Reserve space so layout doesn't jump */
+    min-height: 1.2em;
+    margin-top: 5px;
 }
+
+/* Optional: Clear corner grid areas if needed */
+/*
+.game-container::before, .game-container::after { content: ''; }
+[style*="grid-area: top-left"],
+[style*="grid-area: top-right"],
+[style*="grid-area: bottom-left"],
+[style*="grid-area: bottom-right"] {
+    visibility: hidden;
+}
+*/
