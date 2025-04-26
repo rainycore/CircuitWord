@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>wordcircuit</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div id="top-side" class="side horizontal"></div>
+        <div id="left-side" class="side vertical"></div>
+        <div id="right-side" class="side vertical"></div>
+        <div id="bottom-side" class="side horizontal"></div>
+        <div class="center">
+            <div id="current-word">Current Word:</div>
+            <button onclick="submitWord()">Submit Word</button>
+            <button onclick="restartGame()">Restart</button>
+            <div id="used-words">Used Words:</div>
+            <div id="message"></div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
