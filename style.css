@@ -1,3 +1,4 @@
+/* Basic Styling */
 body {
     font-family: sans-serif;
     display: flex;
@@ -8,136 +9,153 @@ body {
     margin: 0;
 }
 
-/* --- Grid Layout for Game Container --- */
 .game-container {
-    width: 450px; /* Increased size slightly */
+    position: relative; /* Needed for absolute positioning of canvas/sides */
+    width: 450px;
     height: 450px;
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    padding: 10px; /* Reduced padding slightly */
+    padding: 10px;
     box-sizing: border-box;
-
-    /* Set up the 3x3 grid */
-    display: grid;
-    /* Define rows: top letters, center area, bottom letters */
-    /* Adjust row heights as needed, e.g., 'auto' or fixed px */
-    grid-template-rows: 60px 1fr 60px;
-    /* Define columns: left letters, center area, right letters */
-    grid-template-columns: 60px 1fr 60px;
-    /* Define areas for easier placement */
-    grid-template-areas:
-        "top-left top top-right"
-        "left center right"
-        "bottom-left bottom bottom-right";
-    gap: 5px; /* Add small gap between grid areas */
+    /* Grid layout might be complex with canvas overlay, revert to absolute/manual */
 }
 
-/* --- Positioning Sides in the Grid --- */
+/* Canvas for drawing lines */
+#line-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Allows clicks to go through to buttons underneath */
+    z-index: 1; /* Behind letters but above background */
+}
+
+
+/* Positioning Sides (Manual/Absolute - adjust values carefully) */
 .side {
+    position: absolute;
     display: flex;
-    align-items: center; /* Vertically center items in the flex container */
-    justify-content: space-around; /* Distribute items along the main axis */
-    /* border: 1px dashed lightgrey; /* Optional: for visualizing areas */
+    z-index: 2; /* Ensure sides are above the canvas */
 }
 
-#top-side {
-    grid-area: top; /* Place in the 'top' grid area */
-    /* justify-content: space-around; /* Already default for .side */
+.horizontal {
+    width: calc(100% - 100px); /* Width between vertical sides */
+    left: 50px; /* Gap from edge */
+    justify-content: space-around;
 }
 
-#bottom-side {
-    grid-area: bottom; /* Place in the 'bottom' grid area */
-    /* justify-content: space-around; */
-}
-
-#left-side {
-    grid-area: left; /* Place in the 'left' grid area */
-    flex-direction: column; /* Stack letters vertically */
-    /* justify-content: space-around; */ /* Distributes vertically due to flex-direction */
-}
-
-#right-side {
-    grid-area: right; /* Place in the 'right' grid area */
-    flex-direction: column; /* Stack letters vertically */
-    /* justify-content: space-around; */ /* Distributes vertically */
-}
-
-/* --- Center Area --- */
-.center {
-    grid-area: center; /* Place in the 'center' grid area */
-    display: flex;
+.vertical {
+    height: calc(100% - 100px); /* Height between horizontal sides */
+    top: 50px; /* Gap from edge */
     flex-direction: column;
-    justify-content: center; /* Center items vertically */
-    align-items: center; /* Center items horizontally */
-    padding: 15px;
-    box-sizing: border-box;
-    overflow: hidden; /* Prevent content spillover */
+    justify-content: space-around;
 }
 
-/* --- Letter Button Styling --- */
+#top-side { top: 10px; } /* Position near top edge */
+#bottom-side { bottom: 10px; } /* Position near bottom edge */
+#left-side { left: 10px; } /* Position near left edge */
+#right-side { right: 10px; } /* Position near right edge */
+
+
+/* Letter Buttons - Now actual buttons */
 .letter-button {
     border: 1px solid #ccc;
-    padding: 10px;
-    min-width: 35px; /* Slightly larger buttons */
-    min-height: 35px;
-    display: flex; /* Use flex to center text inside */
+    padding: 0; /* Remove padding if using fixed size */
+    width: 40px;  /* Fixed size for easier positioning */
+    height: 40px;
+    display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
     border-radius: 5px;
     background-color: #eee;
     font-weight: bold;
-    cursor: default;
-    margin: 2px; /* Reduced margin slightly */
+    font-size: 1.2em;
+    cursor: pointer; /* Make it look clickable */
+    margin: 5px;
     box-sizing: border-box;
-    transition: background-color 0.2s, color 0.2s;
+    transition: background-color 0.2s, transform 0.1s;
+    z-index: 3; /* Above canvas */
 }
 
-.used-letter {
-    background-color: #d3d3d3;
-    color: #777;
-    text-decoration: line-through;
+.letter-button:hover {
+    background-color: #ddd;
+}
+.letter-button:active {
+    transform: scale(0.95); /* Click feedback */
 }
 
-/* --- Styling for Center Elements --- */
-.center input {
-    width: calc(100% - 22px);
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box;
+/* Style for the currently selected letter */
+.letter-button.selected {
+    background-color: #aae; /* Example selected color */
+    color: white;
+}
+/* Style for the last selected letter (optional) */
+.letter-button.last-selected {
+     border: 2px solid #55f;
 }
 
-.center button {
-    padding: 10px 15px;
+
+/* Center Display Area */
+.center-display {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 60%; /* Adjust as needed */
+    z-index: 5; /* Above everything else */
+    background-color: rgba(255, 255, 255, 0.8); /* Slight background */
+    padding: 15px;
+    border-radius: 8px;
+}
+
+#current-word-display {
+    font-size: 1.5em;
+    font-weight: bold;
+    min-height: 1.5em;
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+#current-word-display span { /* The actual word */
+    color: #0056b3;
+}
+
+.controls button {
+    padding: 8px 12px;
     cursor: pointer;
     border: none;
-    background-color: #007bff;
+    background-color: #6c757d; /* Grey buttons */
     color: white;
     border-radius: 5px;
-    margin-bottom: 10px;
-    margin-left: 5px;
-    margin-right: 5px;
+    margin: 0 5px 10px 5px; /* Spacing */
     transition: background-color 0.2s;
 }
- .center button:hover {
-    background-color: #0056b3;
- }
+.controls button:hover {
+    background-color: #5a6268;
+}
+#submit-button {
+     background-color: #28a745; /* Green submit */
+}
+#submit-button:hover {
+     background-color: #218838;
+}
+
 
 #used-words {
     font-size: 0.9em;
     color: #555;
     margin-bottom: 5px;
     word-wrap: break-word;
-    max-height: 40px; /* Adjust height */
-    width: 100%; /* Take full width of center */
+    max-height: 60px;
     overflow-y: auto;
     text-align: left;
     padding: 5px;
     border: 1px dashed #eee;
-    box-sizing: border-box;
 }
 
 #message {
@@ -146,14 +164,3 @@ body {
     min-height: 1.2em;
     margin-top: 5px;
 }
-
-/* Optional: Clear corner grid areas if needed */
-/*
-.game-container::before, .game-container::after { content: ''; }
-[style*="grid-area: top-left"],
-[style*="grid-area: top-right"],
-[style*="grid-area: bottom-left"],
-[style*="grid-area: bottom-right"] {
-    visibility: hidden;
-}
-*/
