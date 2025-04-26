@@ -2,115 +2,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>wordcircuit</title>
-    <style>
-        /* Basic Styling - Enhance as needed */
-        body {
-            font-family: sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #f0f0f0;
-        }
-
-        .game-container {
-            position: relative;
-            width: 400px;
-            height: 400px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            padding: 20px;
-            box-sizing: border-box; /* Include padding in width/height */
-        }
-
-        .side {
-            position: absolute;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
-
-        .horizontal {
-            width: calc(100% - 40px); /* Adjust for padding */
-            height: 50px;
-            left: 20px; /* Adjust for padding */
-        }
-
-        .vertical {
-            width: 50px;
-            height: calc(100% - 40px - 100px); /* Adjust for padding and top/bottom sides */
-            top: 70px; /* Below top side + padding */
-            flex-direction: column;
-        }
-
-        #top-side { top: 20px; }
-        #bottom-side { bottom: 20px; }
-        #left-side { left: 20px; }
-        #right-side { right: 20px; }
-
-        .letter-button {
-            border: 1px solid #ccc;
-            padding: 10px;
-            min-width: 30px;
-            text-align: center;
-            border-radius: 5px;
-            background-color: #eee;
-            font-weight: bold;
-            cursor: default; /* Indicate they aren't directly clickable */
-            margin: 5px;
-        }
-
-        .used-letter {
-            background-color: #d3d3d3;
-            color: #777;
-            text-decoration: line-through;
-        }
-
-        .center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            width: 70%; /* Adjust as needed */
-        }
-
-        .center input {
-            width: calc(100% - 22px); /* Account for padding/border */
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .center button {
-            padding: 10px 15px;
-            cursor: pointer;
-            border: none;
-            background-color: #007bff;
-            color: white;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-         .center button:hover {
-            background-color: #0056b3;
-         }
-
-        #used-words {
-            font-size: 0.9em;
-            color: #555;
-            margin-bottom: 5px;
-            word-wrap: break-word;
-        }
-
-        #message {
-            color: red;
-            font-weight: bold;
-            min-height: 1.2em; /* Reserve space */
-        }
-    </style>
+    <title>Word Circuit</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="game-container">
@@ -118,10 +11,16 @@
         <div id="left-side" class="side vertical"></div>
         <div id="right-side" class="side vertical"></div>
         <div id="bottom-side" class="side horizontal"></div>
+
         <div class="center">
             <input id="word-input" type="text" placeholder="Type your word here" />
-            <button onclick="submitWord()">Submit</button> <button onclick="restartGame()">Restart</button>
+            <button onclick="submitWord()">Submit</button>
+            <button onclick="restartGame()">Restart</button>
             <div id="used-words">Used Words:</div>
             <div id="message"></div>
         </div>
     </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
