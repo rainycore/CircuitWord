@@ -102,12 +102,23 @@ function validateWord(word) {
         return; // Invalid starting letter
     }
 
+    // 2. Check if all letters are available on the board
+    const availableLetters = [...topLetters, ...leftLetters, ...rightLetters, ...bottomLetters];
+    for (let char of word) {
+        // Check if letter exists on the board (redundant if API checks spelling, but safe)
+        if (!availableLetters.includes(char)) {
+            showMessage(`Invalid letter used: "${char}"`);
+            return;
+        }
+        // Letter reuse is allowed based on previous change (no check here)
+    }
+
     // 3. Check adjacent letters constraint (must be from different sides)
     for (let i = 0; i < word.length - 1; i++) {
         const currentSide = findSide(word[i]);
         const nextSide = findSide(word[i + 1]);
         // Check if both letters were found and if they are on the same side
-        if (currentSide == nextSide) {
+        if (currentSide && nextSide && currentSide === nextSide) {
             showMessage(`Adjacent letters "${word[i]}" and "${word[i + 1]}" are from the same side!`);
             return; // Invalid adjacent letters
         }
@@ -120,11 +131,6 @@ function validateWord(word) {
     usedWordsDisplay.innerText = "Used Words: " + usedWords.join(", ");
 
     // 5. Mark letters as used in the game state and update their visual style
-    // NOTE: This part might need adjustment depending on the exact desired "reuse" rule.
-    // Currently, it still adds letters to usedLetters and styles them.
-    // If you want letters to become available again immediately, you might remove
-    // the usedLetters logic entirely or modify how resetLetterStyles works.
-    // For now, we keep it so letters *look* used after being part of *any* word.
     word.split("").forEach(char => {
         usedLetters.add(char); // Add letter to the set of used letters
         const element = document.getElementById(`letter-${char}`);
@@ -154,33 +160,40 @@ function submitWord() {
         return;
     }
 
+    // Basic check for non-alphabetic characters
+    if (!/^[a-z]+$/.test(word)) {
+         showMessage("Word must contain only letters.");
+         return;
+    }
+
     showMessage("Checking word..."); // Provide feedback to the user
 
-    // --- API Call Section ---
-    // Use Datamuse API to check if the word exists
-    fetch(`https://api.datamuse.com/words?sp=${word}&max=1`) // Query API
+    // --- API Call Section using DictionaryAPI.dev ---
+    fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
         .then(response => {
-            // Check for network/HTTP errors
-            if (!response.ok) {
+            // Check the HTTP status code
+            if (response.ok) { // Status 200-299 means success (word found)
+                return response.json(); // Parse the JSON data (though we might not need it)
+            } else if (response.status === 404) { // Status 404 means word not found
+                throw new Error('WordNotFound'); // Throw a specific error type
+            } else { // Other HTTP errors (e.g., 500 server error)
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            return response.json(); // Parse the JSON response body
         })
         .then(data => {
-            // Check if the API returned the exact word
-            // data.length === 0 means no match found
-            // data[0].word !== word means the best match isn't the exact word entered
-            if (data.length === 0 || data[0].word !== word) {
-                showMessage(`Not in word list`);
-                return; // Stop if not a real word
-            }
-            // Word is valid according to API, proceed with game rule validation
+            // If we reach here, the response status was OK (2xx), meaning the word exists
+            console.log("API Data for valid word:", data); // Optional: view the definition data
             clearMessage(); // Clear "Checking word..." message
-            validateWord(word.toUpperCase()); // Pass uppercase word to game logic
+            validateWord(word.toUpperCase()); // Proceed with game logic validation
         })
-        .catch(error => { // Handle errors during fetch (network issue, API down, etc.)
-            showMessage("Error checking word validity. Check connection?");
-            console.error("API Error:", error); // Log error for debugging
+        .catch(error => {
+            // Handle the different types of errors
+            if (error.message === 'WordNotFound') {
+                showMessage(`"${word.toUpperCase()}" is not a valid dictionary word!`);
+            } else { // Handle network errors or other HTTP errors
+                showMessage("Error checking word validity. Check connection or API status.");
+                console.error("API Error:", error); // Log the actual error
+            }
         });
 }
 
@@ -226,4 +239,3 @@ wordInput.addEventListener("keypress", function(event) {
 // --- Initial Game Setup ---
 // Call setupBoard() when the script loads to draw the initial game board
 setupBoard();
-
