@@ -11,27 +11,32 @@ body {
 
 /* --- Grid Layout for Game Container --- */
 .game-container {
-    width: 450px;
-    height: 450px;
+    /* --- Increased Size --- */
+    width: 600px;  /* Increased from 450px */
+    height: 600px; /* Increased from 450px */
+    /* --- End Increased Size --- */
+
     background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    padding: 10px;
+    border-radius: 12px; /* Slightly larger radius */
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1); /* Slightly larger shadow */
+    padding: 15px; /* Increased padding */
     box-sizing: border-box;
     position: relative; /* Needed for absolute positioning of canvas */
 
     /* === Key Grid Setup === */
     display: grid;
     /* Rows: top letters, center area, bottom letters */
-    grid-template-rows: 60px 1fr 60px; /* Adjust 60px if letters need more/less height */
+    /* Increased fixed size from 60px -> 80px */
+    grid-template-rows: 80px 1fr 80px;
     /* Columns: left letters, center area, right letters */
-    grid-template-columns: 60px 1fr 60px; /* Adjust 60px if letters need more/less width */
+    /* Increased fixed size from 60px -> 80px */
+    grid-template-columns: 80px 1fr 80px;
     /* Naming the grid areas */
     grid-template-areas:
         "top-left top top-right"
         "left center right"
         "bottom-left bottom bottom-right";
-    gap: 5px; /* Optional gap between areas */
+    gap: 8px; /* Increased gap */
     /* ======================= */
 }
 
@@ -43,7 +48,7 @@ body {
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 1; /* Below letters and center */
+    z-index: 1;
 }
 
 /* --- Positioning Sides in the Grid --- */
@@ -52,7 +57,6 @@ body {
     align-items: center;
     justify-content: space-around;
     z-index: 2; /* Above canvas */
-    /* border: 1px dashed lightgrey; /* Optional: for visualizing areas */
 }
 
 /* Assign each side div to its named grid area */
@@ -63,53 +67,55 @@ body {
 
 /* --- Center Area --- */
 .center-display {
-    grid-area: center; /* Place in the 'center' grid area */
+    grid-area: center;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 10px;
+    padding: 15px; /* Increased padding */
     box-sizing: border-box;
     overflow: hidden;
-    z-index: 5; /* Above letters/canvas */
-    background-color: rgba(255, 255, 255, 0.85); /* Make slightly transparent */
-    border-radius: 8px;
+    z-index: 5;
+    background-color: rgba(255, 255, 255, 0.85);
+    border-radius: 10px; /* Increased radius */
 }
 
 /* --- Letter Button Styling --- */
 .letter-button {
     border: 1px solid #ccc;
     padding: 0;
-    width: 40px;
-    height: 40px;
+    /* --- Increased Size --- */
+    width: 55px;  /* Increased from 40px */
+    height: 55px; /* Increased from 40px */
+    font-size: 1.5em; /* Increased font size */
+    /* --- End Increased Size --- */
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
-    border-radius: 5px;
+    border-radius: 6px; /* Increased radius */
     background-color: #eee;
     font-weight: bold;
-    font-size: 1.2em;
     cursor: pointer;
-    margin: 2px;
+    margin: 3px; /* Adjusted margin */
     box-sizing: border-box;
     transition: background-color 0.2s, transform 0.1s;
-    z-index: 3; /* Ensure buttons are clickable (above canvas) */
+    z-index: 3;
 }
 .letter-button:hover { background-color: #ddd; }
 .letter-button:active { transform: scale(0.95); }
 .letter-button.selected { background-color: #aae; color: white; }
-.letter-button.last-selected { border: 2px solid #55f; }
+.letter-button.last-selected { border: 3px solid #55f; } /* Thicker border */
 
 /* --- Styling for Center Elements --- */
 #current-word-display {
-    font-size: 1.3em;
+    font-size: 1.6em; /* Increased size */
     font-weight: bold;
-    min-height: 1.3em;
-    margin-bottom: 8px;
-    letter-spacing: 2px;
+    min-height: 1.4em; /* Adjusted min-height */
+    margin-bottom: 12px; /* Increased margin */
+    letter-spacing: 3px; /* Increased spacing */
     border-bottom: 1px solid #eee;
-    padding-bottom: 5px;
+    padding-bottom: 8px;
     color: #555;
     width: 100%;
     box-sizing: border-box;
@@ -118,50 +124,50 @@ body {
 #current-word-display span { color: #0056b3; }
 
 #word-input-typed {
-    width: calc(100% - 22px);
-    padding: 8px;
-    margin-bottom: 8px;
+    width: calc(100% - 24px); /* Adjusted for padding */
+    padding: 10px; /* Increased padding */
+    margin-bottom: 12px; /* Increased margin */
     border: 1px solid #aaa;
     border-radius: 5px;
     box-sizing: border-box;
-    font-size: 0.9em;
+    font-size: 1em; /* Increased size */
 }
 
 .controls {
-    margin-bottom: 8px;
+    margin-bottom: 10px; /* Increased margin */
     display: flex;
-    flex-wrap: wrap; /* Allow buttons to wrap */
+    flex-wrap: wrap;
     justify-content: center;
-    gap: 5px; /* Add gap between buttons */
+    gap: 8px; /* Increased gap */
     width: 100%;
 }
 
 .controls button {
-    padding: 8px 10px;
+    padding: 10px 14px; /* Increased padding */
     cursor: pointer;
     border: none;
     background-color: #6c757d;
     color: white;
     border-radius: 5px;
     transition: background-color 0.2s;
-    font-size: 0.85em;
-    flex-grow: 1; /* Allow buttons to grow slightly */
-    min-width: 80px; /* Optional minimum width */
+    font-size: 0.95em; /* Increased size */
+    flex-grow: 1;
+    min-width: 90px; /* Increased min-width */
 }
 .controls button:hover { background-color: #5a6268; }
 #submit-button { background-color: #28a745; }
 #submit-button:hover { background-color: #218838; }
 
 #used-words {
-    font-size: 0.85em;
+    font-size: 0.9em; /* Increased size */
     color: #555;
-    margin-bottom: 5px;
+    margin-bottom: 8px; /* Increased margin */
     word-wrap: break-word;
-    max-height: 45px;
+    max-height: 55px; /* Increased height */
     width: 100%;
     overflow-y: auto;
     text-align: left;
-    padding: 5px;
+    padding: 6px; /* Increased padding */
     border: 1px dashed #eee;
     box-sizing: border-box;
 }
@@ -169,8 +175,7 @@ body {
 #message {
     color: black;
     font-weight: bold;
-    min-height: 1.2em;
-    margin-top: 5px;
-    font-size: 0.9em;
+    min-height: 1.3em; /* Adjusted min-height */
+    margin-top: 8px; /* Increased margin */
+    font-size: 1em; /* Increased size */
 }
-
