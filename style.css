@@ -1,6 +1,69 @@
-/* Center Display Area */
+/* Basic Styling */
+body {
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center; /* Center game container horizontally */
+    align-items: center;    /* Center game container vertically */
+    min-height: 100vh;      /* Ensure body takes full viewport height */
+    background-color: #f0f0f0;
+    margin: 0; /* Remove default body margin */
+}
+
+/* --- Grid Layout for Game Container --- */
+.game-container {
+    width: 450px;
+    height: 450px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 10px;
+    box-sizing: border-box;
+    position: relative; /* Needed for absolute positioning of canvas */
+
+    /* === Key Grid Setup === */
+    display: grid;
+    /* Rows: top letters, center area, bottom letters */
+    grid-template-rows: 60px 1fr 60px; /* Adjust 60px if letters need more/less height */
+    /* Columns: left letters, center area, right letters */
+    grid-template-columns: 60px 1fr 60px; /* Adjust 60px if letters need more/less width */
+    /* Naming the grid areas */
+    grid-template-areas:
+        "top-left top top-right"
+        "left center right"
+        "bottom-left bottom bottom-right";
+    gap: 5px; /* Optional gap between areas */
+    /* ======================= */
+}
+
+/* Canvas for drawing lines - Overlay */
+#line-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1; /* Below letters and center */
+}
+
+/* --- Positioning Sides in the Grid --- */
+.side {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    z-index: 2; /* Above canvas */
+    /* border: 1px dashed lightgrey; /* Optional: for visualizing areas */
+}
+
+/* Assign each side div to its named grid area */
+#top-side { grid-area: top; }
+#bottom-side { grid-area: bottom; }
+#left-side { grid-area: left; flex-direction: column; } /* Stack vertically */
+#right-side { grid-area: right; flex-direction: column; } /* Stack vertically */
+
+/* --- Center Area --- */
 .center-display {
-    grid-area: center;
+    grid-area: center; /* Place in the 'center' grid area */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -8,10 +71,35 @@
     padding: 10px;
     box-sizing: border-box;
     overflow: hidden;
-    z-index: 5;
-    background-color: rgba(255, 255, 255, 0.85);
+    z-index: 5; /* Above letters/canvas */
+    background-color: rgba(255, 255, 255, 0.85); /* Make slightly transparent */
     border-radius: 8px;
 }
+
+/* --- Letter Button Styling --- */
+.letter-button {
+    border: 1px solid #ccc;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-radius: 5px;
+    background-color: #eee;
+    font-weight: bold;
+    font-size: 1.2em;
+    cursor: pointer;
+    margin: 2px;
+    box-sizing: border-box;
+    transition: background-color 0.2s, transform 0.1s;
+    z-index: 3; /* Ensure buttons are clickable (above canvas) */
+}
+.letter-button:hover { background-color: #ddd; }
+.letter-button:active { transform: scale(0.95); }
+.letter-button.selected { background-color: #aae; color: white; }
+.letter-button.last-selected { border: 2px solid #55f; }
 
 /* --- Styling for Center Elements --- */
 #current-word-display {
@@ -25,7 +113,7 @@
     color: #555;
     width: 100%;
     box-sizing: border-box;
-    text-align: center; /* Center the text */
+    text-align: center;
 }
 #current-word-display span { color: #0056b3; }
 
@@ -41,23 +129,22 @@
 
 .controls {
     margin-bottom: 8px;
-    display: flex; /* Use flexbox for button layout */
+    display: flex;
     flex-wrap: wrap; /* Allow buttons to wrap */
-    justify-content: center; /* Center buttons */
+    justify-content: center;
     gap: 5px; /* Add gap between buttons */
-    width: 100%; /* Ensure controls take full width */
+    width: 100%;
 }
 
 .controls button {
-    padding: 8px 10px; /* Slightly reduced padding */
+    padding: 8px 10px;
     cursor: pointer;
     border: none;
     background-color: #6c757d;
     color: white;
     border-radius: 5px;
-    /* margin: 0 3px; Removed fixed margins, using gap instead */
     transition: background-color 0.2s;
-    font-size: 0.85em; /* Slightly reduced font size */
+    font-size: 0.85em;
     flex-grow: 1; /* Allow buttons to grow slightly */
     min-width: 80px; /* Optional minimum width */
 }
@@ -80,9 +167,10 @@
 }
 
 #message {
-    color: red;
+    color: black;
     font-weight: bold;
     min-height: 1.2em;
     margin-top: 5px;
     font-size: 0.9em;
 }
+
