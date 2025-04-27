@@ -46,20 +46,13 @@ function generateNewLetters() {
     }
     let selectedLetters = []; 
     let totalVowelCount = 0; 
-    let selectionAttempts = 0;
-    const MAX_ATTEMPTS = 100;
-    while (totalVowelCount < 3 && selectionAttempts < MAX_ATTEMPTS) {
+    while (totalVowelCount < 3) {
         shuffleArray(LETTER_POOL); 
         selectedLetters = LETTER_POOL.slice(0, 12);
         totalVowelCount = countVowels(selectedLetters); 
-        selectionAttempts++;
     }
-    if (selectionAttempts >= MAX_ATTEMPTS && totalVowelCount < 3) { 
-        console.error("Failed to generate initial set with 3+ vowels."); 
-    }
-    let assignmentAttempts = 0; 
     let assignmentOk = false;
-    while (!assignmentOk && assignmentAttempts < MAX_ATTEMPTS) {
+    while (!assignmentOk) {
         shuffleArray(selectedLetters);
         const tempTop = selectedLetters.slice(0, 3); 
         const tempLeft = selectedLetters.slice(3, 6);
@@ -76,7 +69,6 @@ function generateNewLetters() {
             bottomLetters.push(...tempBottom);
             assignmentOk = true;
         }
-        assignmentAttempts++;
     }
      if (!assignmentOk) {
         console.error("Failed to assign letters with max 2 vowels per side.");
