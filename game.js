@@ -22,14 +22,14 @@ const typedWordInput = document.getElementById("word-input-typed");
 // --- Functions ---
 
 /** Shuffles an array */
-function shuffleArray(array) { /* ... (implementation as before) ... */
+function shuffleArray(array) { 
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
 }
 /** Counts vowels */
-function countVowels(letterArray) { /* ... (implementation as before) ... */
+function countVowels(letterArray) {
     let count = 0;
     for (const letter of letterArray) { 
         if (VOWELS.includes(letter)) { 
@@ -39,7 +39,7 @@ function countVowels(letterArray) { /* ... (implementation as before) ... */
     return count;
 }
 /** Generates new letters meeting constraints */
-function generateNewLetters() { /* ... (implementation as before) ... */
+function generateNewLetters() { 
     if (LETTER_POOL.length < 12) { 
         console.error("Letter pool too small!"); 
         return; 
@@ -91,7 +91,7 @@ function generateNewLetters() { /* ... (implementation as before) ... */
     console.log("New Letters:", allSides, `(Vowels Total: ${totalVowelCount})`);
 }
 /** Sets canvas dimensions */
-function resizeCanvas() { /* ... (implementation as before) ... */
+function resizeCanvas() { 
     const container = lineCanvas.parentElement; 
     if (!container) 
         return;
@@ -124,7 +124,7 @@ function setupBoard() {
     resizeCanvas();
 }
 /** Finds which side a letter belongs to */
-function findSide(letter) { /* ... (implementation as before) ... */
+function findSide(letter) { 
     for (const sideName in allSides) { 
         if (allSides[sideName].includes(letter)) { 
             return sideName; 
@@ -133,7 +133,7 @@ function findSide(letter) { /* ... (implementation as before) ... */
     return null;
 }
 /** Handles clicking on a letter button */
-function handleLetterClick(letter, buttonElement) { /* ... (implementation as before) ... */
+function handleLetterClick(letter, buttonElement) { 
     clearMessage();
     if (currentPath.length > 0 && currentPath[currentPath.length - 1].letter === letter) 
         return;
@@ -185,7 +185,7 @@ function redrawLines() {
     ctx.stroke();
 }
 /** Highlights the buttons in the current click path */
- function highlightPath() { /* ... (implementation as before) ... */
+ function highlightPath() { 
     document.querySelectorAll('.letter-button.selected, .letter-button.last-selected').forEach(el => { 
         el.classList.remove('selected', 'last-selected'); 
     });
@@ -271,7 +271,7 @@ function checkWordWithAPI(wordToCheck) {
         return Promise.reject(error); });
 }
 /** Updates the game state after a word is fully validated */
-function updateGameState(validWord) { /* ... (implementation as before) ... */
+function updateGameState(validWord) { 
      usedWords.push(validWord); 
      usedWordsDisplay.innerText = "Used Words: " + usedWords.join(", "); 
      lastLetterOfPreviousWord = validWord[validWord.length - 1];
