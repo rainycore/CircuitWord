@@ -1,104 +1,21 @@
-/* Basic Styling */
-body {
-    font-family: sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: #f0f0f0;
-    margin: 0;
-}
-
-/* --- Grid Layout for Game Container --- */
-.game-container {
-    width: 450px;
-    height: 450px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    padding: 10px;
-    box-sizing: border-box;
-    position: relative; /* Needed for canvas positioning */
-
-    /* Set up the 3x3 grid */
-    display: grid;
-    grid-template-rows: 60px 1fr 60px;
-    grid-template-columns: 60px 1fr 60px;
-    grid-template-areas:
-        "top-left top top-right"
-        "left center right"
-        "bottom-left bottom bottom-right";
-    gap: 5px;
-}
-
-/* Canvas for drawing lines - Overlay */
-#line-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none; /* Allows clicks to go through */
-    z-index: 1;
-}
-
-/* --- Positioning Sides in the Grid --- */
-.side {
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    z-index: 2; /* Above canvas */
-    /* border: 1px dashed lightgrey; /* Optional: for visualizing areas */
-}
-
-#top-side { grid-area: top; }
-#bottom-side { grid-area: bottom; }
-#left-side { grid-area: left; flex-direction: column; }
-#right-side { grid-area: right; flex-direction: column; }
-
-/* --- Center Area --- */
+/* Center Display Area */
 .center-display {
     grid-area: center;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 10px; /* Reduced padding */
+    padding: 10px;
     box-sizing: border-box;
     overflow: hidden;
-    z-index: 5; /* Above letters */
+    z-index: 5;
     background-color: rgba(255, 255, 255, 0.85);
     border-radius: 8px;
 }
 
-/* --- Letter Button Styling --- */
-.letter-button {
-    border: 1px solid #ccc;
-    padding: 0;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    border-radius: 5px;
-    background-color: #eee;
-    font-weight: bold;
-    font-size: 1.2em;
-    cursor: pointer;
-    margin: 2px;
-    box-sizing: border-box;
-    transition: background-color 0.2s, transform 0.1s;
-    z-index: 3; /* Above canvas, below center */
-}
-.letter-button:hover { background-color: #ddd; }
-.letter-button:active { transform: scale(0.95); }
-.letter-button.selected { background-color: #aae; color: white; }
-.letter-button.last-selected { border: 2px solid #55f; }
-
 /* --- Styling for Center Elements --- */
 #current-word-display {
-    font-size: 1.3em; /* Adjusted size */
+    font-size: 1.3em;
     font-weight: bold;
     min-height: 1.3em;
     margin-bottom: 8px;
@@ -106,45 +23,54 @@ body {
     border-bottom: 1px solid #eee;
     padding-bottom: 5px;
     color: #555;
-    width: 100%; /* Take full width */
+    width: 100%;
     box-sizing: border-box;
+    text-align: center; /* Center the text */
 }
 #current-word-display span { color: #0056b3; }
 
 #word-input-typed {
     width: calc(100% - 22px);
-    padding: 8px; /* Adjusted padding */
+    padding: 8px;
     margin-bottom: 8px;
     border: 1px solid #aaa;
     border-radius: 5px;
     box-sizing: border-box;
-    font-size: 0.9em; /* Adjusted size */
+    font-size: 0.9em;
 }
 
 .controls {
     margin-bottom: 8px;
+    display: flex; /* Use flexbox for button layout */
+    flex-wrap: wrap; /* Allow buttons to wrap */
+    justify-content: center; /* Center buttons */
+    gap: 5px; /* Add gap between buttons */
+    width: 100%; /* Ensure controls take full width */
 }
+
 .controls button {
-    padding: 8px 12px;
+    padding: 8px 10px; /* Slightly reduced padding */
     cursor: pointer;
     border: none;
     background-color: #6c757d;
     color: white;
     border-radius: 5px;
-    margin: 0 5px;
+    /* margin: 0 3px; Removed fixed margins, using gap instead */
     transition: background-color 0.2s;
-    font-size: 0.9em;
+    font-size: 0.85em; /* Slightly reduced font size */
+    flex-grow: 1; /* Allow buttons to grow slightly */
+    min-width: 80px; /* Optional minimum width */
 }
 .controls button:hover { background-color: #5a6268; }
 #submit-button { background-color: #28a745; }
 #submit-button:hover { background-color: #218838; }
 
 #used-words {
-    font-size: 0.85em; /* Adjusted size */
+    font-size: 0.85em;
     color: #555;
     margin-bottom: 5px;
     word-wrap: break-word;
-    max-height: 45px; /* Adjust height */
+    max-height: 45px;
     width: 100%;
     overflow-y: auto;
     text-align: left;
@@ -154,7 +80,7 @@ body {
 }
 
 #message {
-    color: black;
+    color: red;
     font-weight: bold;
     min-height: 1.2em;
     margin-top: 5px;
