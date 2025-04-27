@@ -1,16 +1,20 @@
 // --- Game Setup ---
-const topLetters = ['A', 'T', 'E']; // Example - Will be randomized
-const leftLetters = ['M', 'P', 'S']; // Example
-const rightLetters = ['R', 'O', 'N']; // Example
-const bottomLetters = ['C', 'I', 'D']; // Example
-const allSides = { top: topLetters, left: leftLetters, right: rightLetters, bottom: bottomLetters };
-let allAvailableLetters = []; // Will be populated by generateNewLetters
 const LETTER_POOL = "ABCDEFGHIJKLMNOPRSTUVWY".split(''); // Example pool
+const VOWELS = "AEIOU".split('');
+
+// Global variables to hold the current letters on the board
+let topLetters = [];
+let leftLetters = [];
+let rightLetters = [];
+let bottomLetters = [];
+let allAvailableLetters = [];
+
+const allSides = { top: topLetters, left: leftLetters, right: rightLetters, bottom: bottomLetters };
 
 // --- Game State Variables ---
 let usedWords = [];
-let currentWord = ""; // For click path
-let currentPath = []; // For click path - Array of {letter, element, x, y}
+let currentWord = "";
+let currentPath = [];
 let lastLetterOfPreviousWord = null;
 
 // --- DOM Element References ---
@@ -31,21 +35,92 @@ function shuffleArray(array) {
     }
 }
 
-/** Generates 12 unique letters and assigns them to sides */
-function generateNewLetters() {
-    if (LETTER_POOL.length < 12) { console.error("Letter pool too small!"); return; }
-    shuffleArray(LETTER_POOL);
-    const selectedLetters = LETTER_POOL.slice(0, 12);
-    topLetters.length = 0; leftLetters.length = 0; rightLetters.length = 0; bottomLetters.length = 0;
-    topLetters.push(...selectedLetters.slice(0, 3));
-    leftLetters.push(...selectedLetters.slice(3, 6));
-    rightLetters.push(...selectedLetters.slice(6, 9));
-    bottomLetters.push(...selectedLetters.slice(9, 12));
-    allAvailableLetters = [...topLetters, ...leftLetters, ...rightLetters, ...bottomLetters];
-    console.log("New Letters:", allSides);
+/** Counts vowels in an array of letters */
+function countVowels(letterArray) {
+    let count = 0;
+    for (const letter of letterArray) {
+        if (VOWELS.includes(letter)) {
+            count++;
+        }
+    }
+    return count;
 }
 
-/** Sets canvas dimensions */
+
+/**
+ * Generates a new set of 12 unique letters, ensuring at least 3 vowels total
+ * AND no more than 2 vowels per side, and assigns them to the sides.
+ */
+function generateNewLetters() {
+    if (LETTER_POOL.length < 12) { console.error("Letter pool too small!"); return; }
+
+    let selectedLetters = [];
+    let totalVowelCount = 0;
+    let selectionAttempts = 0;
+    const MAX_ATTEMPTS = 100; // Safety limit
+
+    // 1. Select 12 unique letters with at least 3 vowels total
+    while (totalVowelCount < 3 && selectionAttempts < MAX_ATTEMPTS) {
+        shuffleArray(LETTER_POOL);
+        selectedLetters = LETTER_POOL.slice(0, 12); // Already unique
+        totalVowelCount = countVowels(selectedLetters);
+        selectionAttempts++;
+    }
+
+    if (selectionAttempts >= MAX_ATTEMPTS && totalVowelCount < 3) {
+        console.error("Failed to generate initial set with 3+ vowels.");
+        // Handle error or use the last set? For now, use the last one.
+    }
+
+    // 2. Assign these 12 letters to sides, ensuring max 2 vowels per side
+    let assignmentAttempts = 0;
+    let assignmentOk = false;
+    while (!assignmentOk && assignmentAttempts < MAX_ATTEMPTS) {
+        shuffleArray(selectedLetters); // Shuffle the *selected* 12 letters for assignment
+
+        // Tentatively assign
+        const tempTop = selectedLetters.slice(0, 3);
+        const tempLeft = selectedLetters.slice(3, 6);
+        const tempRight = selectedLetters.slice(6, 9);
+        const tempBottom = selectedLetters.slice(9, 12);
+
+        // Check vowel count per side
+        if (countVowels(tempTop) <= 2 &&
+            countVowels(tempLeft) <= 2 &&
+            countVowels(tempRight) <= 2 &&
+            countVowels(tempBottom) <= 2)
+        {
+            // Assignment is valid, update global arrays
+            topLetters.length = 0; leftLetters.length = 0; rightLetters.length = 0; bottomLetters.length = 0;
+            topLetters.push(...tempTop);
+            leftLetters.push(...tempLeft);
+            rightLetters.push(...tempRight);
+            bottomLetters.push(...tempBottom);
+            assignmentOk = true; // Exit the loop
+        }
+        assignmentAttempts++;
+    }
+
+     if (!assignmentOk) {
+        console.error("Failed to assign letters with max 2 vowels per side.");
+        // Fallback: Use the last attempted assignment even if it violates the rule
+        // This might happen if the initial 12 letters make it impossible (e.g., 8 vowels selected)
+        // A more robust solution might re-select the initial 12 letters.
+        if (!topLetters.length) { // Ensure letters are assigned if fallback needed
+             topLetters.push(...selectedLetters.slice(0, 3));
+             leftLetters.push(...selectedLetters.slice(3, 6));
+             rightLetters.push(...selectedLetters.slice(6, 9));
+             bottomLetters.push(...selectedLetters.slice(9, 12));
+        }
+    }
+
+    // Update the combined list of available letters
+    allAvailableLetters = [...topLetters, ...leftLetters, ...rightLetters, ...bottomLetters];
+    console.log("New Letters:", allSides, `(Vowels Total: ${totalVowelCount})`);
+}
+
+
+/** Sets canvas dimensions based on its container. */
 function resizeCanvas() {
     const container = lineCanvas.parentElement;
     if (!container) return;
@@ -54,7 +129,7 @@ function resizeCanvas() {
     redrawLines();
 }
 
-/** Creates letter buttons */
+/** Creates the letter buttons and adds click listeners. Uses current global letter arrays. */
 function setupBoard() {
     const sides = [
         { id: "top-side", letters: topLetters }, { id: "left-side", letters: leftLetters },
@@ -75,12 +150,12 @@ function setupBoard() {
     resizeCanvas();
 }
 
-/** Finds which side a letter belongs to */
+/** Finds which side a letter belongs to based on current global arrays. */
 function findSide(letter) {
     for (const sideName in allSides) { if (allSides[sideName].includes(letter)) { return sideName; } } return null;
 }
 
-/** Handles clicking on a letter button */
+/** Handles clicking on a letter button (for click path). */
 function handleLetterClick(letter, buttonElement) {
     clearMessage();
     if (currentPath.length > 0 && currentPath[currentPath.length - 1].letter === letter) return;
@@ -110,7 +185,7 @@ function handleLetterClick(letter, buttonElement) {
     highlightPath();
 }
 
-/** Updates the display showing the word currently being built by clicks */
+/** Updates the display showing the word currently being built by clicks. */
 function updateCurrentWordDisplay() { currentWordSpan.innerText = currentWord; }
 
 /** Clears the canvas and redraws lines based on the currentPath */
@@ -195,71 +270,37 @@ function updateGameState(validWord) {
 function submitWord() {
     let wordToSubmit = "";
     let isTyped = false;
-
-    // Prioritize typed word if it has content
     const typedValue = typedWordInput.value.trim().toUpperCase();
-    if (typedValue.length > 0) {
-        wordToSubmit = typedValue;
-        isTyped = true;
-    } else if (currentWord.length > 0) { // Otherwise use clicked word
-        wordToSubmit = currentWord;
-         // Validation requires more than just the starting letter for clicked words
-         if (wordToSubmit.length < 2 && lastLetterOfPreviousWord) {
-            showMessage("Word is too short!");
-            return;
-         }
-    } else {
-        showMessage("No word entered!"); // Neither typed nor clicked
-        return;
-    }
+    if (typedValue.length > 0) { wordToSubmit = typedValue; isTyped = true; }
+    else if (currentWord.length > 0) { wordToSubmit = currentWord; if (wordToSubmit.length < 2 && lastLetterOfPreviousWord) { showMessage("Word is too short!"); return; } }
+    else { showMessage("No word entered!"); return; }
 
-    // Validate game rules
     if (!validateWordRules(wordToSubmit)) { return; }
 
-    // Check API
     checkWordWithAPI(wordToSubmit.toLowerCase())
         .then(data => {
             console.log("API Data for valid word:", data);
             clearMessage();
-            updateGameState(wordToSubmit); // Update state and setup next word start
-
-            // Clear the input method used
-            if (isTyped) {
-                typedWordInput.value = "";
-            } else {
-                // The updateGameState function already resets the click path correctly
-            }
+            updateGameState(wordToSubmit);
+            if (isTyped) { typedWordInput.value = ""; } // Clear typed input only if it was used
+            // Click path is reset by updateGameState
         })
         .catch(() => { /* Error message handled in checkWordWithAPI */ });
 }
 
-
-/** NEW FUNCTION: Clears the current game board state but keeps letters */
+/** Clears the current game board state but keeps letters */
 function clearCurrentGame() {
-    usedWords = []; // Clear used words for this board
-    lastLetterOfPreviousWord = null; // Reset starting constraint
-    usedWordsDisplay.innerText = "Used Words:";
-    typedWordInput.value = ""; // Clear typed input
-
-    // Clear current click path completely
-    currentWord = "";
-    currentPath = [];
-    updateCurrentWordDisplay();
-    redrawLines();
-    highlightPath();
-    clearMessage();
-    // NOTE: Does NOT call generateNewLetters() or setupBoard()
+    usedWords = []; lastLetterOfPreviousWord = null;
+    usedWordsDisplay.innerText = "Used Words:"; typedWordInput.value = "";
+    currentWord = ""; currentPath = [];
+    updateCurrentWordDisplay(); redrawLines(); highlightPath(); clearMessage();
 }
-
 
 /** Resets the entire game state AND generates new letters */
 function restartGame() {
-    // Generate and assign new letters
-    generateNewLetters();
-    // Reset game state variables completely
-    clearCurrentGame(); // Use clearCurrentGame to reset state vars
-    // Redraw the board with the new letters
-    setupBoard(); // This now uses the new letters
+    generateNewLetters(); // Generate new letters (meeting constraints)
+    clearCurrentGame(); // Reset state variables
+    setupBoard(); // Draw the board with the new letters
 }
 
 /** Displays a message to the user */
@@ -269,17 +310,11 @@ function clearMessage() { messageDisplay.innerText = ""; }
 
 // --- Event Listeners ---
 window.addEventListener('resize', resizeCanvas);
-// Listen for Enter on the typed input
 typedWordInput.addEventListener("keypress", function(event) {
-    if (event.key === "Enter") { event.preventDefault(); submitWord(); } // Use generic submit
+    if (event.key === "Enter") { event.preventDefault(); submitWord(); }
 });
-// Optional: Listen for Enter globally if needed (might interfere)
-// document.addEventListener("keypress", function(event) {
-//    if (event.key === "Enter" && document.activeElement !== typedWordInput) {
-//        submitWord(); // Submit clicked word if Enter pressed outside input
-//    }
-// });
 
 // --- Initial Game Setup ---
-generateNewLetters(); // Generate the first set of letters
+generateNewLetters(); // Generate the first set of letters (meeting constraints)
 setupBoard(); // Draw the initial board with generated letters
+
