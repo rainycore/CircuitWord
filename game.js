@@ -626,7 +626,6 @@ function clearBoardProgress() {
     typedWordInput.value = ""; // Clear typed input
 
     clearCurrentClickPath(); // Reset click path state completely
-    showMessage("Current game cleared"); // Provide feedback
 }
 
 
