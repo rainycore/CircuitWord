@@ -692,9 +692,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Add listener for hamburger menu toggle (if elements exist)
-    if (hamburgerButton && sideMenu) {
-        hamburgerButton.addEventListener('click', toggleMenu);
-    }
+    // if (hamburgerButton && sideMenu) {
+    //     hamburgerButton.addEventListener('click', toggleMenu);
+    // }
 
     // --- Initial Game Setup ---
     generateNewLetters(); // Generate the first set of letters (meeting constraints)
