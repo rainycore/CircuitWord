@@ -645,11 +645,19 @@ function restartGame() {
 
 // --- Hamburger Menu Functions ---
 
-/** Toggles the side menu open/closed */
+/**
+ * Toggles the side menu open/closed by adding/removing the 'open' class.
+ */
 function toggleMenu() {
-    if (sideMenu) {
-        sideMenu.classList.toggle('open');
+    // Add this check:
+    if (!sideMenu) {
+        console.error("Side menu element not found!");
+        showMessage("Error: Menu cannot be opened."); // Show user message
+        return; // Stop if the menu element doesn't exist
     }
+    // Original line:
+    sideMenu.classList.toggle('open');
+    console.log("Toggled menu. Current classes:", sideMenu.className); // Add log
 }
 
 /** Calls restartGame and then closes the menu */
