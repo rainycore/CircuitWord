@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,9 +7,16 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <button id="hamburger-button" class="hamburger-button" onclick="toggleMenu()">
+        &#9776; </button>
+
+    <div id="side-menu" class="side-menu">
+        <button class="menu-item" onclick="restartGameAndCloseMenu()">New Board</button>
+        <button class="menu-item close-menu" onclick="toggleMenu()">Close Menu</button>
+    </div>
+
     <div class="game-container">
         <canvas id="line-canvas"></canvas>
-
         <div id="top-side" class="side horizontal"></div>
         <div id="left-side" class="side vertical"></div>
         <div id="right-side" class="side vertical"></div>
@@ -16,14 +24,13 @@
 
         <div class="center-display">
              <div id="current-word-display">Current Word: <span></span></div>
-             <input id="word-input-typed" type="text" placeholder="" />
+             <input id="word-input-typed" type="text" placeholder="Or type word and press Enter..." />
              <div class="controls">
-                <button id="submit-button" onclick="submitWord()">Enter</button>
+                <button id="submit-button" onclick="submitWord()">Submit</button>
                 <button id="delete-last-button" onclick="deleteLastClickedLetter()">Delete</button>
                 <button id="clear-current-button" onclick="clearCurrentClickPath()">Clear</button>
                 <button id="clear-game-button" onclick="clearBoardProgress()">Restart</button>
-                <button id="restart-button" onclick="restartGame()">New Board</button>
-             </div>
+                </div>
              <div id="used-words">Used Words:</div>
              <div id="message"></div>
         </div>
