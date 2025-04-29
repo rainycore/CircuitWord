@@ -7,6 +7,8 @@ body {
     min-height: 100vh;      /* Ensure body takes full viewport height */
     background-color: #f0f0f0;
     margin: 0; /* Remove default body margin */
+    position: relative; /* Needed for absolute positioning of menu */
+    overflow-x: hidden; /* Prevent horizontal scroll if menu slides */
 }
 
 /* --- Grid Layout for Game Container --- */
@@ -38,6 +40,8 @@ body {
         "bottom-left bottom bottom-right";
     gap: 8px; /* Increased gap */
     /* ======================= */
+
+    z-index: 5; /* Below side menu and hamburger */
 }
 
 /* Canvas for drawing lines - Overlay */
@@ -48,7 +52,7 @@ body {
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 1;
+    z-index: 1; /* Below letters and center */
 }
 
 /* --- Positioning Sides in the Grid --- */
@@ -67,7 +71,7 @@ body {
 
 /* --- Center Area --- */
 .center-display {
-    grid-area: center;
+    grid-area: center; /* Place in the 'center' grid area */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -75,8 +79,8 @@ body {
     padding: 15px; /* Increased padding */
     box-sizing: border-box;
     overflow: hidden;
-    z-index: 5;
-    background-color: rgba(255, 255, 255, 0.85);
+    z-index: 6; /* Above letters/canvas, below menu */
+    background-color: rgba(255, 255, 255, 0.85); /* Make slightly transparent */
     border-radius: 10px; /* Increased radius */
 }
 
@@ -100,7 +104,7 @@ body {
     margin: 3px; /* Adjusted margin */
     box-sizing: border-box;
     transition: background-color 0.2s, transform 0.1s;
-    z-index: 3;
+    z-index: 3; /* Ensure buttons are clickable (above canvas) */
 }
 .letter-button:hover { background-color: #ddd; }
 .letter-button:active { transform: scale(0.95); }
@@ -136,7 +140,7 @@ body {
 .controls {
     margin-bottom: 10px; /* Increased margin */
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: wrap; /* Allow buttons to wrap */
     justify-content: center;
     gap: 8px; /* Increased gap */
     width: 100%;
@@ -173,25 +177,13 @@ body {
 }
 
 #message {
-    color: black;
+    color: black; 
     font-weight: bold;
     min-height: 1.3em; /* Adjusted min-height */
     margin-top: 8px; /* Increased margin */
     font-size: 1em; /* Increased size */
 }
 
-/* Ensure body allows positioning */
-body {
-    font-family: sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: #f0f0f0;
-    margin: 0;
-    position: relative; /* Needed for absolute positioning of menu */
-    overflow-x: hidden; /* Prevent horizontal scroll if menu slides */
-}
 
 /* --- Hamburger Button Styling --- */
 .hamburger-button {
@@ -217,21 +209,21 @@ body {
 .side-menu {
     position: fixed; /* Fixed position relative to viewport */
     top: 0;
-    left: -250px; /* Start off-screen to the left */
+    left: -250px; /* Start off-screen to the left (adjust if width changes) */
     width: 200px; /* Width of the menu */
-    height: 100%; /* Full height */
+    height: 100%; /* Full viewport height */
     background-color: #343a40; /* Dark background */
     color: white;
     padding: 60px 20px 20px 20px; /* Padding (top padding to avoid hamburger) */
-    box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+    box-shadow: 2px 0 5px rgba(0,0,0,0.2); /* Optional shadow */
     transition: left 0.3s ease-in-out; /* Smooth slide transition */
-    z-index: 1000; /* Below hamburger but above game */
+    z-index: 1000; /* Below hamburger but above game container */
     box-sizing: border-box;
     display: flex;
     flex-direction: column; /* Stack menu items vertically */
 }
 
-/* Style for when the menu is open */
+/* Style for when the menu is open (class added by JS) */
 .side-menu.open {
     left: 0; /* Slide into view */
 }
@@ -258,17 +250,4 @@ body {
     border-top: 1px solid #495057; /* Separator above close */
     border-bottom: none;
     font-weight: bold;
-}
-
-
-/* Ensure game container doesn't interfere with absolute positioning */
-.game-container {
-    /* ... keep existing styles ... */
-    z-index: 5; /* Make sure it's below menu overlay */
-}
-
-/* Adjust center display z-index if needed */
-.center-display {
-   /* ... keep existing styles ... */
-   z-index: 6; /* Above game board but below menu */
 }
