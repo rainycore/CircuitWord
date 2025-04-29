@@ -179,3 +179,96 @@ body {
     margin-top: 8px; /* Increased margin */
     font-size: 1em; /* Increased size */
 }
+
+/* Ensure body allows positioning */
+body {
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f0f0;
+    margin: 0;
+    position: relative; /* Needed for absolute positioning of menu */
+    overflow-x: hidden; /* Prevent horizontal scroll if menu slides */
+}
+
+/* --- Hamburger Button Styling --- */
+.hamburger-button {
+    position: absolute; /* Position relative to body */
+    top: 15px;
+    left: 15px;
+    z-index: 1001; /* Above everything */
+    background: #5a6268; /* Button background */
+    color: white;
+    border: none;
+    font-size: 24px; /* Size of the hamburger icon */
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    line-height: 1; /* Ensure icon fits well */
+}
+
+.hamburger-button:hover {
+    background: #343a40;
+}
+
+/* --- Side Menu Panel Styling --- */
+.side-menu {
+    position: fixed; /* Fixed position relative to viewport */
+    top: 0;
+    left: -250px; /* Start off-screen to the left */
+    width: 200px; /* Width of the menu */
+    height: 100%; /* Full height */
+    background-color: #343a40; /* Dark background */
+    color: white;
+    padding: 60px 20px 20px 20px; /* Padding (top padding to avoid hamburger) */
+    box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+    transition: left 0.3s ease-in-out; /* Smooth slide transition */
+    z-index: 1000; /* Below hamburger but above game */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column; /* Stack menu items vertically */
+}
+
+/* Style for when the menu is open */
+.side-menu.open {
+    left: 0; /* Slide into view */
+}
+
+/* Styling for items within the menu */
+.side-menu .menu-item {
+    background: none;
+    border: none;
+    color: #f8f9fa;
+    padding: 15px 0; /* Vertical spacing */
+    text-align: left;
+    font-size: 1.1em;
+    cursor: pointer;
+    width: 100%;
+    border-bottom: 1px solid #495057; /* Separator */
+}
+
+.side-menu .menu-item:hover {
+    background-color: #495057; /* Highlight on hover */
+}
+
+.side-menu .menu-item.close-menu {
+    margin-top: auto; /* Push close button to the bottom */
+    border-top: 1px solid #495057; /* Separator above close */
+    border-bottom: none;
+    font-weight: bold;
+}
+
+
+/* Ensure game container doesn't interfere with absolute positioning */
+.game-container {
+    /* ... keep existing styles ... */
+    z-index: 5; /* Make sure it's below menu overlay */
+}
+
+/* Adjust center display z-index if needed */
+.center-display {
+   /* ... keep existing styles ... */
+   z-index: 6; /* Above game board but below menu */
+}
