@@ -35,10 +35,13 @@ let lastLetterOfPreviousWord = null; // Last letter of the last successfully sub
 // --- DOM Element References ---
 
 
-// Get references once the DOM is loaded
-let currentWordSpan, usedWordsDisplay, messageDisplay, lineCanvas, ctx, typedWordInput, sideMenu, hamburgerButton;
+// Declare variables globally, assign them after DOM loads
+let currentWordSpan, usedWordsDisplay, messageDisplay, lineCanvas, ctx, typedWordInput, sideMenu, hamburgerButton, customLetterMessage;
 
-// Function to initialize DOM references after DOM is loaded
+/**
+ * Initializes references to essential DOM elements.
+ * Should be called after the DOM is fully loaded.
+ */
 function initializeDOMReferences() {
     currentWordSpan = document.querySelector("#current-word-display span");
     usedWordsDisplay = document.getElementById("used-words");
@@ -48,12 +51,13 @@ function initializeDOMReferences() {
     typedWordInput = document.getElementById("word-input-typed");
     sideMenu = document.getElementById("side-menu"); // For hamburger menu
     hamburgerButton = document.getElementById("hamburger-button"); // For hamburger menu
+    customLetterMessage = document.getElementById("custom-letter-message"); // For menu messages
 
     // Check if essential elements were found
-    if (!currentWordSpan || !usedWordsDisplay || !messageDisplay || !lineCanvas || !ctx || !typedWordInput) {
-        console.error("Essential DOM elements not found! Check HTML IDs.");
-        alert("Error initializing game elements. Please check the HTML structure.");
-        // Potentially disable game functionality here
+    if (!currentWordSpan || !usedWordsDisplay || !messageDisplay || !lineCanvas || !ctx || !typedWordInput || !sideMenu || !hamburgerButton || !customLetterMessage) {
+        console.error("Essential DOM elements (including custom message or menu) not found! Check HTML IDs.");
+        alert("Error initializing game elements. Please check the HTML structure and element IDs.");
+        // Consider disabling game functionality if critical elements are missing
     }
 }
 
@@ -645,28 +649,78 @@ function restartGame() {
 
 // --- Hamburger Menu Functions ---
 
-/**
- * Toggles the side menu open/closed by adding/removing the 'open' class.
- */
+/** Toggles the side menu open/closed */
 function toggleMenu() {
-    // Add this check:
     if (!sideMenu) {
-        console.error("Side menu element not found!");
-        showMessage("Error: Menu cannot be opened."); // Show user message
-        return; // Stop if the menu element doesn't exist
+        console.error("Side menu element reference is missing!");
+        showMessage("Error: Menu cannot be operated.");
+        return;
     }
-    // Original line:
     sideMenu.classList.toggle('open');
-    console.log("Toggled menu. Current classes:", sideMenu.className); // Add log
+    // console.log("Toggled menu. Current classes:", sideMenu.className); // Debug log
 }
 
 /** Calls restartGame and then closes the menu */
 function restartGameAndCloseMenu() {
     restartGame(); // Call the existing restart function
-    // Only toggle if menu is actually open
+    // Only toggle if menu is actually open and exists
     if (sideMenu && sideMenu.classList.contains('open')) {
         toggleMenu(); // Close the menu
     }
+}
+
+/** Sets custom letters from menu inputs */
+function setCustomLetters() {
+    clearMessage(true); // Clear previous menu messages
+
+    const topInput = document.getElementById('custom-top');
+    const leftInput = document.getElementById('custom-left');
+    const rightInput = document.getElementById('custom-right');
+    const bottomInput = document.getElementById('custom-bottom');
+
+    if (!topInput || !leftInput || !rightInput || !bottomInput) {
+        showMessage("Custom input fields not found!", true); return;
+    }
+
+    // Get and clean input values
+    const topStr = topInput.value.trim().toUpperCase();
+    const leftStr = leftInput.value.trim().toUpperCase();
+    const rightStr = rightInput.value.trim().toUpperCase();
+    const bottomStr = bottomInput.value.trim().toUpperCase();
+
+    // Validate length
+    if (topStr.length !== LETTERS_PER_SIDE || leftStr.length !== LETTERS_PER_SIDE ||
+        rightStr.length !== LETTERS_PER_SIDE || bottomStr.length !== LETTERS_PER_SIDE) {
+        showMessage(`Each side must have ${LETTERS_PER_SIDE} letters.`, true); return;
+    }
+
+    // Combine, check uniqueness, check characters
+    const allCustomLetters = (topStr + leftStr + rightStr + bottomStr).split('');
+    if (allCustomLetters.length !== REQUIRED_LETTERS) { showMessage(`Total must be ${REQUIRED_LETTERS} letters.`, true); return; }
+    const uniqueLetters = new Set(allCustomLetters);
+    if (uniqueLetters.size !== REQUIRED_LETTERS) { showMessage("Letters must be unique.", true); return; }
+    for (const letter of allCustomLetters) { if (!/^[A-Z]$/.test(letter)) { showMessage(`Invalid character: "${letter}".`, true); return; } }
+
+    // Check vowel constraints
+    const customTop = topStr.split(''); const customLeft = leftStr.split('');
+    const customRight = rightStr.split(''); const customBottom = bottomStr.split('');
+    const totalVowelCount = countVowels(allCustomLetters);
+    if (totalVowelCount < MIN_TOTAL_VOWELS) { showMessage(`Need >= ${MIN_TOTAL_VOWELS} vowels. Found ${totalVowelCount}.`, true); return; }
+    if (countVowels(customTop) > MAX_VOWELS_PER_SIDE || countVowels(customLeft) > MAX_VOWELS_PER_SIDE ||
+        countVowels(customRight) > MAX_VOWELS_PER_SIDE || countVowels(customBottom) > MAX_VOWELS_PER_SIDE) {
+        showMessage(`Max ${MAX_VOWELS_PER_SIDE} vowels per side.`, true); return;
+    }
+
+    // --- Validation Passed ---
+    topLetters.length = 0; leftLetters.length = 0; rightLetters.length = 0; bottomLetters.length = 0;
+    topLetters.push(...customTop); leftLetters.push(...customLeft);
+    rightLetters.push(...customRight); bottomLetters.push(...customBottom);
+    allAvailableLetters = [...topLetters, ...leftLetters, ...rightLetters, ...bottomLetters];
+    console.log("Custom Letters Set:", allSides);
+
+    clearBoardProgress(); // Reset game state
+    setupBoard(); // Redraw with custom letters
+    toggleMenu(); // Close the menu
 }
 
 // --- Event Listeners ---
