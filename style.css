@@ -229,7 +229,7 @@ body {
         background-color: #343a40; /* Dark background */
         color: white;
         /* --- Increased Top Padding --- */
-        padding: 105px 20px 20px 40px; 
+        padding: 105px 20px 40px 20px; 
         /* --- End Increased Top Padding --- */
         box-shadow: 2px 0 5px rgba(0,0,0,0.2); /* Optional shadow */
         transition: left 0.3s ease-in-out; /* Smooth slide transition */
