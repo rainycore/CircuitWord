@@ -13,11 +13,10 @@
 </head>
 <body>
     <button id="hamburger-button" class="hamburger-button" onclick="toggleMenu()">
-        <img src="assets/img/circuitword-logo.png" alt="Menu">
-    </button>
+        <img src="assets/img/circuitword-logo.png" alt="Menu"> </button>
 
     <div id="side-menu" class="side-menu">
-        <button class="menu-item" onclick="restartGameAndCloseMenu()">New Random Board</button>
+        <button class="menu-item" id="new-board-button" onclick="restartGameAndCloseMenu()">New Random Board</button>
         <div class="custom-letter-section">
             <label>Custom Letters (3 per side):</label>
             <input type="text" id="custom-top" class="custom-input" maxlength="3" placeholder="Top">
@@ -27,6 +26,7 @@
             <button class="menu-item" id="set-custom-button" onclick="setCustomLetters()">Set Custom Board</button>
             <div id="custom-letter-message" class="menu-message"></div>
         </div>
+        <button class="menu-item close-menu" onclick="toggleMenu()">Close Menu</button>
     </div>
 
     <div class="game-container">
