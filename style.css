@@ -159,8 +159,8 @@ body {
     min-width: 90px; /* Increased min-width */
 }
 .controls button:hover { background-color: #5a6268; }
-#submit-button { background-color: #eee; }
-#submit-button:hover { background-color: #ddd; }
+#submit-button { background-color: #6c757d; }
+#submit-button:hover { background-color: #5a6268; }
 
 #used-words {
     font-size: 0.9em; /* Increased size */
