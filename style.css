@@ -5,7 +5,7 @@ body {
     justify-content: center; /* Center game container horizontally */
     align-items: center;    /* Center game container vertically */
     min-height: 100vh;      /* Ensure body takes full viewport height */
-    background-color: #f0f0f0;
+    background-color: #2e2e2e;
     margin: 0; /* Remove default body margin */
     position: relative; /* Needed for absolute positioning of menu */
     overflow-x: hidden; /* Prevent horizontal scroll if menu slides */
