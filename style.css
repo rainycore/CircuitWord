@@ -229,7 +229,7 @@ body {
         background-color: #343a40; /* Dark background */
         color: white;
         /* --- Increased Top Padding --- */
-        padding: 95px 20px 20px 20px; 
+        padding: 105px 20px 20px 20px; 
         /* --- End Increased Top Padding --- */
         box-shadow: 2px 0 5px rgba(0,0,0,0.2); /* Optional shadow */
         transition: left 0.3s ease-in-out; /* Smooth slide transition */
@@ -282,13 +282,7 @@ body {
     .menu-message { font-size: 0.85em; color: #ffc107; margin-top: 5px; min-height: 1em; }
 
 
-    .side-menu .menu-item.close-menu {
-        margin-top: auto; /* Push close button to the bottom */
-        border-top: 1px solid #495057; /* Separator above close */
-        border-bottom: none;
-        font-weight: bold;
-        margin-bottom: 0; /* Remove bottom margin for the last item */
-    }
+
 /* --- Custom Letter Input Section Styling --- */
 .custom-letter-section {
     border-top: 1px solid #495057; /* Separator */
