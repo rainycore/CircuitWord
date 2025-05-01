@@ -196,8 +196,8 @@ body {
         padding: 0;       /* Remove padding */
         cursor: pointer;
         /* --- Adjust Size --- */
-        width: 50px;        /* New width */
-        height: 50px;       /* New height (equal to width for square) */
+        width: 70px;        /* New width */
+        height: 70px;       /* New height (equal to width for square) */
         /* --- End Adjust Size --- */
         overflow: hidden; /* Hide parts of image that overflow */
     }
