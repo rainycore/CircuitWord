@@ -12,10 +12,10 @@
     <div id="side-menu" class="side-menu">
         <button class="menu-item" onclick="restartGameAndCloseMenu()">New Random Board</button> <div class="custom-letter-section">
             <label>Custom Letters (3 per side):</label>
-            <input type="text" id="custom-top" class="custom-input" maxlength="3" placeholder="Top (e.g., ABC)">
-            <input type="text" id="custom-left" class="custom-input" maxlength="3" placeholder="Left (e.g., DEF)">
-            <input type="text" id="custom-right" class="custom-input" maxlength="3" placeholder="Right (e.g., GHI)">
-            <input type="text" id="custom-bottom" class="custom-input" maxlength="3" placeholder="Bottom (e.g., JKL)">
+            <input type="text" id="custom-top" class="custom-input" maxlength="3" placeholder="Top">
+            <input type="text" id="custom-left" class="custom-input" maxlength="3" placeholder="Left">
+            <input type="text" id="custom-right" class="custom-input" maxlength="3" placeholder="Right">
+            <input type="text" id="custom-bottom" class="custom-input" maxlength="3" placeholder="Bottom">
             <button class="menu-item" id="set-custom-button" onclick="setCustomLetters()">Set Custom Board</button>
             <div id="custom-letter-message" class="menu-message"></div> </div>
         <button class="menu-item close-menu" onclick="toggleMenu()">Close Menu</button>
@@ -34,8 +34,8 @@
              <div class="controls">
                 <button id="submit-button" onclick="submitWord()">Submit</button>
                 <button id="delete-last-button" onclick="deleteLastClickedLetter()">Delete</button>
-                <button id="clear-current-button" onclick="clearCurrentClickPath()">Clear Current</button>
-                <button id="clear-game-button" onclick="clearBoardProgress()">Clear Game</button>
+                <button id="clear-current-button" onclick="clearCurrentClickPath()">Clear</button>
+                <button id="clear-game-button" onclick="clearBoardProgress()">Restart</button>
                 </div>
              <div id="used-words">Used Words:</div>
              <div id="message"></div>
