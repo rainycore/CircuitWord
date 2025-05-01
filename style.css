@@ -185,24 +185,34 @@ body {
 }
 
 
-/* --- Hamburger Button Styling --- */
+/* --- Hamburger Button Styling (Using Image) --- */
 .hamburger-button {
     position: absolute; /* Position relative to body */
     top: 15px;
     left: 15px;
     z-index: 1001; /* Above everything */
-    background: #5a6268; /* Button background */
-    color: white;
-    border: none;
-    font-size: 24px; /* Size of the hamburger icon */
-    padding: 5px 10px;
+    background: none; /* Remove default button background */
+    border: none; /* Remove default button border */
+    padding: 0; /* Remove padding to size precisely */
     cursor: pointer;
-    border-radius: 5px;
-    line-height: 1; /* Ensure icon fits well */
+    width: 40px; /* Set desired width for the button/logo */
+    height: 40px; /* Set desired height */
+    /* Optional: Add slight background/border-radius if needed */
+    /* background-color: rgba(255, 255, 255, 0.5); */
+    /* border-radius: 5px; */
 }
 
+/* Style the image inside the hamburger button */
+.hamburger-button img {
+    display: block; /* Remove extra space below image */
+    width: 100%;   /* Make image fill the button width */
+    height: 100%;  /* Make image fill the button height */
+    object-fit: contain; /* Scale image nicely without stretching */
+}
+
+/* Optional hover effect */
 .hamburger-button:hover {
-    background: #343a40;
+    opacity: 0.8; /* Example hover effect */
 }
 
 /* --- Side Menu Panel Styling --- */
@@ -251,9 +261,6 @@ body {
     border-bottom: none;
     font-weight: bold;
 }
-
-/* --- Previous Styles --- */
-/* ... (body, game-container, canvas, sides, center-display, letter-button, controls, hamburger, side-menu, menu-item, etc.) ... */
 
 /* --- Custom Letter Input Section Styling --- */
 .custom-letter-section {
