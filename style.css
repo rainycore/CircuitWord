@@ -5,7 +5,7 @@ body {
     justify-content: center; /* Center game container horizontally */
     align-items: center;    /* Center game container vertically */
     min-height: 100vh;      /* Ensure body takes full viewport height */
-    background-color: #2e2e2e;
+    background-color: #3766cc;
     margin: 0; /* Remove default body margin */
     position: relative; /* Needed for absolute positioning of menu */
     overflow-x: hidden; /* Prevent horizontal scroll if menu slides */
@@ -18,7 +18,7 @@ body {
     height: 600px; /* Increased from 450px */
     /* --- End Increased Size --- */
 
-    background-color: #fff;
+    background-color: #2e2e2e;
     border-radius: 12px; /* Slightly larger radius */
     box-shadow: 0 5px 10px rgba(0,0,0,0.1); /* Slightly larger shadow */
     padding: 15px; /* Increased padding */
