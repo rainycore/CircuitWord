@@ -219,53 +219,76 @@ body {
         opacity: 0.8; /* Example hover effect */
     }
 
-/* --- Side Menu Panel Styling --- */
-.side-menu {
-    position: fixed; /* Fixed position relative to viewport */
-    top: 0;
-    left: -250px; /* Start off-screen to the left (adjust if width changes) */
-    width: 200px; /* Width of the menu */
-    height: 100%; /* Full viewport height */
-    background-color: #343a40; /* Dark background */
-    color: white;
-    padding: 60px 20px 20px 20px; /* Padding (top padding to avoid hamburger) */
-    box-shadow: 2px 0 5px rgba(0,0,0,0.2); /* Optional shadow */
-    transition: left 0.3s ease-in-out; /* Smooth slide transition */
-    z-index: 1000; /* Below hamburger but above game container */
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column; /* Stack menu items vertically */
-}
+ /* --- Side Menu Panel Styling (Adjusted Padding/Margins) --- */
+    .side-menu {
+        position: fixed; /* Fixed position relative to viewport */
+        top: 0;
+        left: -250px; /* Start off-screen to the left (adjust if width changes) */
+        width: 200px; /* Width of the menu */
+        height: 100%; /* Full viewport height */
+        background-color: #343a40; /* Dark background */
+        color: white;
+        /* --- Increased Top Padding --- */
+        padding: 80px 20px 20px 20px; /* Increased top padding from 60px */
+        /* --- End Increased Top Padding --- */
+        box-shadow: 2px 0 5px rgba(0,0,0,0.2); /* Optional shadow */
+        transition: left 0.3s ease-in-out; /* Smooth slide transition */
+        z-index: 1000; /* Below hamburger but above game container */
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column; /* Stack menu items vertically */
+    }
 
-/* Style for when the menu is open (class added by JS) */
-.side-menu.open {
-    left: 0; /* Slide into view */
-}
+    /* Style for when the menu is open (class added by JS) */
+    .side-menu.open {
+        left: 0; /* Slide into view */
+    }
 
-/* Styling for items within the menu */
-.side-menu .menu-item {
-    background: none;
-    border: none;
-    color: #f8f9fa;
-    padding: 15px 0; /* Vertical spacing */
-    text-align: left;
-    font-size: 1.1em;
-    cursor: pointer;
-    width: 100%;
-    border-bottom: 1px solid #495057; /* Separator */
-}
+    /* Styling for items within the menu */
+    .side-menu .menu-item {
+        background: none;
+        border: none;
+        color: #f8f9fa;
+        padding: 15px 0; /* Vertical padding */
+        text-align: left;
+        font-size: 1.1em;
+        cursor: pointer;
+        width: 100%;
+        border-bottom: 1px solid #495057; /* Separator */
+        /* --- Added Bottom Margin --- */
+        margin-bottom: 10px; /* Add space below regular menu items */
+        /* --- End Added Bottom Margin --- */
+    }
 
-.side-menu .menu-item:hover {
-    background-color: #495057; /* Highlight on hover */
-}
+    .side-menu .menu-item:hover {
+        background-color: #495057; /* Highlight on hover */
+    }
 
-.side-menu .menu-item.close-menu {
-    margin-top: auto; /* Push close button to the bottom */
-    border-top: 1px solid #495057; /* Separator above close */
-    border-bottom: none;
-    font-weight: bold;
-}
+    /* --- Custom Letter Input Section Styling --- */
+    .custom-letter-section {
+        border-top: 1px solid #495057; /* Separator */
+        border-bottom: 1px solid #495057; /* Separator */
+        padding: 15px 0;
+        /* --- Added Bottom Margin --- */
+        margin: 10px 0 20px 0; /* Add more space below this section */
+        /* --- End Added Bottom Margin --- */
+    }
+    /* ... (keep styles for label, .custom-input, #set-custom-button, .menu-message) ... */
+    .custom-letter-section label { display: block; margin-bottom: 10px; font-size: 0.9em; color: #adb5bd; }
+    .custom-input { width: calc(100% - 16px); padding: 8px; margin-bottom: 8px; border: 1px solid #6c757d; background-color: #495057; color: white; border-radius: 4px; font-size: 1em; text-transform: uppercase; box-sizing: border-box; text-align: center; letter-spacing: 2px; }
+    .custom-input::placeholder { color: #adb5bd; opacity: 0.7; text-transform: none; letter-spacing: normal; }
+    #set-custom-button { border-bottom: none; background-color: #17a2b8; text-align: center; font-weight: bold; margin-bottom: 0; /* Remove extra margin from menu-item */ }
+    #set-custom-button:hover { background-color: #138496; }
+    .menu-message { font-size: 0.85em; color: #ffc107; margin-top: 5px; min-height: 1em; }
 
+
+    .side-menu .menu-item.close-menu {
+        margin-top: auto; /* Push close button to the bottom */
+        border-top: 1px solid #495057; /* Separator above close */
+        border-bottom: none;
+        font-weight: bold;
+        margin-bottom: 0; /* Remove bottom margin for the last item */
+    }
 /* --- Custom Letter Input Section Styling --- */
 .custom-letter-section {
     border-top: 1px solid #495057; /* Separator */
@@ -321,11 +344,6 @@ body {
     color: #ffc107; /* Warning color */
     margin-top: 5px;
     min-height: 1em;
-}
-
-/* Adjust close button margin if needed */
-.side-menu .menu-item.close-menu {
-    /* margin-top: auto; /* Keep this if you want it at the very bottom */
 }
 
 
