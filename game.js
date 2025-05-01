@@ -135,15 +135,18 @@ function clearMessage() {
 /**
  * Generates a new set of 12 unique letters, meeting all constraints,
  * and assigns them to the global side arrays. Retries entire process if needed.
+ * @returns {boolean} True if successful, false otherwise.
  */
 function generateNewLetters() {
-    if (LETTER_POOL.length < REQUIRED_LETTERS) {
-        console.error("Letter pool is too small!");
-        return false; // Indicate failure
+    // Use the globally defined LETTER_POOL which now includes all 26 letters with weighted vowels
+    const uniqueLettersInPool = new Set(LETTER_POOL).size;
+    if (uniqueLettersInPool < REQUIRED_LETTERS) {
+        console.error("Letter pool does not contain enough unique letters!");
+        return false; // Cannot proceed
     }
 
     let assignmentOk = false;
-    let selectedLetters = [];
+    let selectedLetters = []; // This will hold the 12 UNIQUE letters
     let totalVowelCount = 0;
     let masterAttempts = 0;
 
@@ -151,27 +154,54 @@ function generateNewLetters() {
     while (!assignmentOk && masterAttempts < MAX_GENERATION_ATTEMPTS) {
         masterAttempts++;
 
-        // Select 12 unique letters ensuring >= MIN_TOTAL_VOWELS
+        // --- Step 1: Select 12 unique letters ensuring >= MIN_TOTAL_VOWELS ---
         totalVowelCount = 0;
         let selectionAttempts = 0;
         while (totalVowelCount < MIN_TOTAL_VOWELS) {
-            if (selectionAttempts++ > MAX_GENERATION_ATTEMPTS) { // Prevent infinite loop here too
+            if (selectionAttempts++ > MAX_GENERATION_ATTEMPTS) {
                  console.error(`Failed to generate initial set with ${MIN_TOTAL_VOWELS}+ vowels.`);
                  return false; // Indicate failure
             }
-            shuffleArray(LETTER_POOL);
-            selectedLetters = LETTER_POOL.slice(0, REQUIRED_LETTERS);
-            totalVowelCount = countVowels(selectedLetters);
-        }
 
-        // Shuffle the selected 12 letters and tentatively assign
-        shuffleArray(selectedLetters);
+            // ** Corrected Unique Selection Logic **
+            const uniqueSelection = [];
+            const seen = new Set();
+            // Shuffle a copy of the pool each time to get different random draws
+            const shuffledPool = [...LETTER_POOL];
+            shuffleArray(shuffledPool);
+
+            // Iterate through the shuffled pool until 12 unique letters are found
+            for (const letter of shuffledPool) {
+                if (!seen.has(letter)) { // Check if we already picked this letter
+                    uniqueSelection.push(letter);
+                    seen.add(letter);
+                    if (uniqueSelection.length === REQUIRED_LETTERS) {
+                        break; // Stop once we have 12 unique letters
+                    }
+                }
+            }
+            // ** End Corrected Logic **
+
+            // Check if we actually got 12 unique letters (should be guaranteed if pool is sufficient)
+            if (uniqueSelection.length < REQUIRED_LETTERS) {
+                 console.error("Could not select enough unique letters from pool (unexpected error).");
+                 continue; // Retry selecting the initial 12
+            }
+
+            selectedLetters = uniqueSelection; // Now guaranteed unique
+            totalVowelCount = countVowels(selectedLetters);
+            // If totalVowelCount < MIN_TOTAL_VOWELS, the outer while loop continues
+        } // End inner vowel count loop
+
+
+        // --- Step 2 & 3: Shuffle the selected 12 unique letters and tentatively assign ---
+        shuffleArray(selectedLetters); // Shuffle the 12 unique letters for side assignment
         const tempTop = selectedLetters.slice(0, LETTERS_PER_SIDE);
         const tempLeft = selectedLetters.slice(LETTERS_PER_SIDE, 2 * LETTERS_PER_SIDE);
         const tempRight = selectedLetters.slice(2 * LETTERS_PER_SIDE, 3 * LETTERS_PER_SIDE);
         const tempBottom = selectedLetters.slice(3 * LETTERS_PER_SIDE, 4 * LETTERS_PER_SIDE);
 
-        // Check vowel count per side constraint
+        // --- Step 4: Check vowel count per side constraint ---
         if (countVowels(tempTop) <= MAX_VOWELS_PER_SIDE &&
             countVowels(tempLeft) <= MAX_VOWELS_PER_SIDE &&
             countVowels(tempRight) <= MAX_VOWELS_PER_SIDE &&
@@ -185,17 +215,17 @@ function generateNewLetters() {
             bottomLetters.push(...tempBottom);
             assignmentOk = true; // Valid assignment found, exit the main while loop
         }
-        // If not assignmentOk, the main while loop continues
+        // If assignment failed constraints, the main while loop continues
     } // End while(!assignmentOk)
 
     if (!assignmentOk) {
         console.error(`Failed to generate a valid board after ${MAX_GENERATION_ATTEMPTS} attempts.`);
-        // Consider a fallback, like using the last attempt even if invalid, or a default board
-        // For now, just signal failure
-        return false;
+        // Fallback needed: Use a default board or the last invalid attempt?
+        // For now, signal failure. You might want to add a default board here.
+        return false; // Indicate failure
     }
 
-    // Update the combined list of available letters
+    // Update the combined list of available letters for validation checks
     allAvailableLetters = [...topLetters, ...leftLetters, ...rightLetters, ...bottomLetters];
     console.log("New Letters Generated:", allSides, `(Vowels Total: ${totalVowelCount})`);
     return true; // Indicate success
