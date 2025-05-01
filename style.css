@@ -185,33 +185,39 @@ body {
 }
 
 
-.hamburger-button {
-    position: absolute; /* Position relative to body */
-    top: 15px;          /* Keep distance from top */
-    left: 15px;         /* Keep distance from left */
-    z-index: 1001;      /* Above everything */
-    background: none;   /* Remove default button background */
-    border: none;     /* Remove default button border */
-    padding: 0;       /* Remove padding */
-    cursor: pointer;
-    /* --- Adjust Size --- */
-    width: 50px;        /* New width */
-    height: 50px;       /* New height (equal to width for square) */
-    /* --- End Adjust Size --- */
-}
+/* --- Hamburger Button Styling --- */
+    .hamburger-button {
+        position: absolute; /* Position relative to body */
+        top: 15px;          /* Keep distance from top */
+        left: 15px;         /* Keep distance from left */
+        z-index: 1001;      /* Above everything */
+        background: none;   /* Remove default button background */
+        border: none;     /* Remove default button border */
+        padding: 0;       /* Remove padding */
+        cursor: pointer;
+        /* --- Adjust Size --- */
+        width: 50px;        /* New width */
+        height: 50px;       /* New height (equal to width for square) */
+        /* --- End Adjust Size --- */
+        overflow: hidden; /* Hide parts of image that overflow */
+    }
 
-/* Style the image inside the hamburger button */
-.hamburger-button img {
-    display: block; /* Remove extra space below image */
-    width: 100%;   /* Make image fill the button width */
-    height: 100%;  /* Make image fill the button height */
-    object-fit: contain; /* Scale image nicely without stretching */
-}
+    /* Style the image inside the hamburger button */
+    .hamburger-button img {
+        display: block; /* Remove extra space below image */
+        width: 100%;   /* Make image fill the button width */
+        height: 100%;  /* Make image fill the button height */
+        /* --- Changed object-fit --- */
+        object-fit: cover; /* Scale image to cover, maintain aspect ratio, crop overflow */
+        /* --- End Change --- */
+        /* Optional: Add border-radius if you want rounded corners on the logo */
+        /* border-radius: 5px; */
+    }
 
-/* Optional hover effect */
-.hamburger-button:hover {
-    opacity: 0.8; /* Example hover effect */
-}
+    /* Optional hover effect */
+    .hamburger-button:hover {
+        opacity: 0.8; /* Example hover effect */
+    }
 
 /* --- Side Menu Panel Styling --- */
 .side-menu {
