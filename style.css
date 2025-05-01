@@ -159,12 +159,12 @@ body {
     min-width: 90px; /* Increased min-width */
 }
 .controls button:hover { background-color: #5a6268; }
-#submit-button { background-color: #28a745; }
-#submit-button:hover { background-color: #218838; }
+#submit-button { background-color: #eee; }
+#submit-button:hover { background-color: #ddd; }
 
 #used-words {
     font-size: 0.9em; /* Increased size */
-    color: #555;
+    color: white;
     margin-bottom: 8px; /* Increased margin */
     word-wrap: break-word;
     max-height: 55px; /* Increased height */
