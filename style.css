@@ -80,7 +80,7 @@ body {
     box-sizing: border-box;
     overflow: hidden;
     z-index: 6; /* Above letters/canvas, below menu */
-    background-color: rgba(255, 255, 255, 0.85); /* Make slightly transparent */
+    background-color: #00bf63; /* Make slightly transparent */
     border-radius: 10px; /* Increased radius */
 }
 
