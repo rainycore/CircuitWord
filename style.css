@@ -185,21 +185,19 @@ body {
 }
 
 
-/* --- Hamburger Button Styling (Using Image) --- */
 .hamburger-button {
     position: absolute; /* Position relative to body */
-    top: 15px;
-    left: 15px;
-    z-index: 1001; /* Above everything */
-    background: none; /* Remove default button background */
-    border: none; /* Remove default button border */
-    padding: 0; /* Remove padding to size precisely */
+    top: 15px;          /* Keep distance from top */
+    left: 15px;         /* Keep distance from left */
+    z-index: 1001;      /* Above everything */
+    background: none;   /* Remove default button background */
+    border: none;     /* Remove default button border */
+    padding: 0;       /* Remove padding */
     cursor: pointer;
-    width: 40px; /* Set desired width for the button/logo */
-    height: 40px; /* Set desired height */
-    /* Optional: Add slight background/border-radius if needed */
-    /* background-color: rgba(255, 255, 255, 0.5); */
-    /* border-radius: 5px; */
+    /* --- Adjust Size --- */
+    width: 50px;        /* New width */
+    height: 50px;       /* New height (equal to width for square) */
+    /* --- End Adjust Size --- */
 }
 
 /* Style the image inside the hamburger button */
