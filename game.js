@@ -1,8 +1,14 @@
 // --- Game Setup & Constants ---
 
-// Constants
-const LETTER_POOL = "AAABCDEEEFGHIIIJKLMNOOOPRSTUUUVWY".split('');
+// Define consonants and vowels
+const CONSONANTS = "BCDFGHJKLMNPQRSTVWXYZ".split('');
 const VOWELS = "AEIOU".split('');
+
+// Create the pool: 1 of each consonant, 3 of each vowel
+const LETTER_POOL = [
+    ...CONSONANTS,
+    ...VOWELS, ...VOWELS, ...VOWELS // Add vowels 3 times
+];
 const REQUIRED_LETTERS = 12;
 const LETTERS_PER_SIDE = 3;
 const MIN_TOTAL_VOWELS = 3;
