@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -10,10 +11,11 @@
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <link rel="manifest" href="site.webmanifest">
     <link rel="shortcut icon" href="favicon.ico">
-    </head>
+</head>
 <body>
     <button id="hamburger-button" class="hamburger-button" onclick="toggleMenu()">
-        &#9776; </button>
+        <img src="assets/img/circuitword-logo.png" alt="Menu">
+    </button>
 
     <div id="side-menu" class="side-menu">
         <button class="menu-item" onclick="restartGameAndCloseMenu()">New Random Board</button>
@@ -44,7 +46,7 @@
                 <button id="delete-last-button" onclick="deleteLastClickedLetter()">Delete</button>
                 <button id="clear-current-button" onclick="clearCurrentClickPath()">Clear</button>
                 <button id="clear-game-button" onclick="clearBoardProgress()">Restart</button>
-                </div>
+             </div>
              <div id="used-words">Used Words:</div>
              <div id="message"></div>
         </div>
