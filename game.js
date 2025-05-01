@@ -1,7 +1,7 @@
 // --- Game Setup & Constants ---
 
 // Constants
-const LETTER_POOL = "ABCDEFGHIJKLMNOPRSTUVWY".split('');
+const LETTER_POOL = "AAABCDEEEFGHIIIJKLMNOOOPRSTUUUVWY".split('');
 const VOWELS = "AEIOU".split('');
 const REQUIRED_LETTERS = 12;
 const LETTERS_PER_SIDE = 3;
