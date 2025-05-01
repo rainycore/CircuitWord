@@ -251,3 +251,70 @@ body {
     border-bottom: none;
     font-weight: bold;
 }
+
+/* --- Previous Styles --- */
+/* ... (body, game-container, canvas, sides, center-display, letter-button, controls, hamburger, side-menu, menu-item, etc.) ... */
+
+/* --- Custom Letter Input Section Styling --- */
+.custom-letter-section {
+    border-top: 1px solid #495057; /* Separator */
+    border-bottom: 1px solid #495057; /* Separator */
+    padding: 15px 0;
+    margin: 10px 0;
+}
+
+.custom-letter-section label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 0.9em;
+    color: #adb5bd; /* Lighter text */
+}
+
+.custom-input {
+    width: calc(100% - 16px); /* Full width minus padding */
+    padding: 8px;
+    margin-bottom: 8px;
+    border: 1px solid #6c757d; /* Darker border */
+    background-color: #495057; /* Dark input background */
+    color: white;
+    border-radius: 4px;
+    font-size: 1em;
+    text-transform: uppercase; /* Force uppercase */
+    box-sizing: border-box;
+    text-align: center;
+    letter-spacing: 2px; /* Space out letters */
+}
+
+/* Style placeholder text */
+.custom-input::placeholder {
+    color: #adb5bd;
+    opacity: 0.7;
+    text-transform: none; /* Keep placeholder normal case */
+    letter-spacing: normal;
+}
+
+/* Style for the button within the custom section */
+#set-custom-button {
+    border-bottom: none; /* Remove default border from menu-item */
+    background-color: #17a2b8; /* Info color */
+    text-align: center;
+    font-weight: bold;
+}
+#set-custom-button:hover {
+    background-color: #138496;
+}
+
+/* Style for validation messages within the menu */
+.menu-message {
+    font-size: 0.85em;
+    color: #ffc107; /* Warning color */
+    margin-top: 5px;
+    min-height: 1em;
+}
+
+/* Adjust close button margin if needed */
+.side-menu .menu-item.close-menu {
+    /* margin-top: auto; /* Keep this if you want it at the very bottom */
+}
+
+
