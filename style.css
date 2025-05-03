@@ -2,219 +2,343 @@
 body {
     font-family: sans-serif;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: #282c34; /* Dark background */
-    margin: 0;
-    position: relative;
-    overflow-x: hidden;
+    justify-content: center; /* Center game container horizontally */
+    align-items: center;    /* Center game container vertically */
+    min-height: 100vh;      /* Ensure body takes full viewport height */
+    background-color: #2e2e2e;
+    margin: 0; /* Remove default body margin */
+    position: relative; /* Needed for absolute positioning of menu */
+    overflow-x: hidden; /* Prevent horizontal scroll if menu slides */
 }
 
-/* --- Game Container --- */
+/* --- Grid Layout for Game Container --- */
 .game-container {
-    width: 550px; /* Adjusted size */
-    height: 550px;
-    background-color: transparent; /* Make container itself transparent */
-    border-radius: 10px;
-    /* Removed box-shadow */
-    padding: 0; /* Remove padding, positioning is absolute */
+    /* --- Increased Size --- */
+    width: 600px;  /* Increased from 450px */
+    height: 600px; /* Increased from 450px */
+    /* --- End Increased Size --- */
+
+    background-color: #2e2e2e;
+    border-radius: 12px; /* Slightly larger radius */
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1); /* Slightly larger shadow */
+    padding: 15px; /* Increased padding */
     box-sizing: border-box;
-    position: relative; /* Crucial for positioning children absolutely */
-    /* Removed grid layout */
+    position: relative; /* Needed for absolute positioning of canvas */
+
+    /* === Key Grid Setup === */
+    display: grid;
+    /* Rows: top letters, center area, bottom letters */
+    /* Increased fixed size from 60px -> 80px */
+    grid-template-rows: 80px 1fr 80px;
+    /* Columns: left letters, center area, right letters */
+    /* Increased fixed size from 60px -> 80px */
+    grid-template-columns: 80px 1fr 80px;
+    /* Naming the grid areas */
+    grid-template-areas:
+        "top-left top top-right"
+        "left center right"
+        "bottom-left bottom bottom-right";
+    gap: 8px; /* Increased gap */
+    /* ======================= */
+
+    z-index: 5; /* Below side menu and hamburger */
 }
 
 /* Canvas for drawing lines - Overlay */
 #line-canvas {
     position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     pointer-events: none;
-    z-index: 1;
+    z-index: 1; /* Below letters and center */
 }
 
-/* --- Positioning Sides Absolutely --- */
+/* --- Positioning Sides in the Grid --- */
 .side {
-    position: absolute; /* Position relative to game-container */
     display: flex;
     align-items: center;
     justify-content: space-around;
-    z-index: 3; /* Above canvas, potentially above center bg */
-    /* border: 1px dashed red; */ /* For debugging positioning */
+    z-index: 2; /* Above canvas */
 }
 
-.horizontal {
-    width: calc(100% - 160px); /* Width between vertical sides' inner edges */
-    height: 60px; /* Height of the side area */
-    left: 80px; /* Positioned inwards from the edge */
-}
+/* Assign each side div to its named grid area */
+#top-side { grid-area: top; }
+#bottom-side { grid-area: bottom; }
+#left-side { grid-area: left; flex-direction: column; } /* Stack vertically */
+#right-side { grid-area: right; flex-direction: column; } /* Stack vertically */
 
-.vertical {
-    width: 60px; /* Width of the side area */
-    height: calc(100% - 160px); /* Height between horizontal sides' inner edges */
-    top: 80px; /* Positioned inwards from the edge */
-    flex-direction: column;
-}
-
-/* Exact positioning */
-#top-side { top: 10px; /* Distance from container top */ }
-#bottom-side { bottom: 10px; /* Distance from container bottom */ }
-#left-side { left: 10px; /* Distance from container left */ }
-#right-side { right: 10px; /* Distance from container right */ }
-
-/* --- Center Area (The Green Box) --- */
+/* --- Center Area --- */
 .center-display {
-    position: absolute; /* Position relative to game-container */
-    /* Calculate position to center it */
-    top: 80px;  /* Match vertical side height + gap */
-    left: 80px; /* Match horizontal side height + gap */
-    width: calc(100% - 160px); /* Fill space between side areas */
-    height: calc(100% - 160px);
-    background-color: #2a9d8f; /* Green background */
-    border-radius: 8px;
+    grid-area: center; /* Place in the 'center' grid area */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 20px;
+    padding: 15px; /* Increased padding */
     box-sizing: border-box;
     overflow: hidden;
-    z-index: 2; /* Below letters but above canvas */
+    z-index: 6; /* Above letters/canvas, below menu */
+    background-color: #00bf63; /* Make slightly transparent */
+    border-radius: 10px; /* Increased radius */
 }
 
-/* --- Letter Button Styling (Circuit Style) --- */
+/* --- Letter Button Styling --- */
 .letter-button {
-    border: 1px solid #555; /* Darker border */
+    border: 1px solid #ccc;
     padding: 0;
-    width: 50px; /* Adjust size */
-    height: 50px;
-    font-size: 1.4em;
+    /* --- Increased Size --- */
+    width: 55px;  /* Increased from 40px */
+    height: 55px; /* Increased from 40px */
+    font-size: 1.5em; /* Increased font size */
+    /* --- End Increased Size --- */
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
-    border-radius: 4px;
-    background-color: #f8f9fa; /* Light background */
-    color: #333; /* Dark text */
+    border-radius: 6px; /* Increased radius */
+    background-color: #eee;
     font-weight: bold;
     cursor: pointer;
-    margin: 3px;
+    margin: 3px; /* Adjusted margin */
     box-sizing: border-box;
     transition: background-color 0.2s, transform 0.1s;
-    z-index: 3; /* Above center display background */
+    z-index: 3; /* Ensure buttons are clickable (above canvas) */
 }
-.letter-button:hover { background-color: #e2e6ea; }
+.letter-button:hover { background-color: #ddd; }
 .letter-button:active { transform: scale(0.95); }
-.letter-button.selected { background-color: #6c757d; color: white; } /* Grey selected */
-.letter-button.last-selected { border: 3px solid #007bff; } /* Blue border */
+.letter-button.selected { background-color: #aae; color: white; }
+.letter-button.last-selected { border: 3px solid #55f; } /* Thicker border */
 
 /* --- Styling for Center Elements --- */
 #current-word-display {
-    font-size: 1.4em; /* Adjusted size */
+    font-size: 1.6em; /* Increased size */
     font-weight: bold;
-    min-height: 1.4em;
-    margin-bottom: 10px;
-    letter-spacing: 2px;
-    /* border-bottom: 1px solid #eee; */ /* Removed border */
-    padding-bottom: 5px;
-    color: #fff; /* White text on green background */
+    min-height: 1.4em; /* Adjusted min-height */
+    margin-bottom: 12px; /* Increased margin */
+    letter-spacing: 3px; /* Increased spacing */
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+    color: #555;
     width: 100%;
     box-sizing: border-box;
     text-align: center;
 }
-#current-word-display span { color: #e9c46a; } /* Gold color for word */
+#current-word-display span { color: #0056b3; }
 
 #word-input-typed {
-    width: calc(100% - 24px);
-    padding: 10px;
-    margin-bottom: 10px;
+    width: calc(100% - 24px); /* Adjusted for padding */
+    padding: 10px; /* Increased padding */
+    margin-bottom: 12px; /* Increased margin */
     border: 1px solid #aaa;
     border-radius: 5px;
     box-sizing: border-box;
-    font-size: 1em;
-    background-color: rgba(255, 255, 255, 0.9); /* Slightly transparent white */
+    font-size: 1em; /* Increased size */
 }
 
 .controls {
-    margin-bottom: 10px;
+    margin-bottom: 10px; /* Increased margin */
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: wrap; /* Allow buttons to wrap */
     justify-content: center;
-    gap: 8px;
+    gap: 8px; /* Increased gap */
     width: 100%;
 }
 
 .controls button {
-    padding: 8px 12px; /* Adjusted padding */
+    padding: 10px 14px; /* Increased padding */
     cursor: pointer;
     border: none;
-    background-color: #495057; /* Dark grey buttons */
+    background-color: #6c757d;
     color: white;
     border-radius: 5px;
     transition: background-color 0.2s;
-    font-size: 0.9em; /* Adjusted size */
+    font-size: 0.95em; /* Increased size */
     flex-grow: 1;
-    min-width: 80px;
+    min-width: 90px; /* Increased min-width */
 }
-.controls button:hover { background-color: #343a40; } /* Darker hover */
-#submit-button { background-color: #4CAF50; } /* Green submit */
-#submit-button:hover { background-color: #45a049; }
+.controls button:hover { background-color: #5a6268; }
+#submit-button { background-color: #6c757d; }
+#submit-button:hover { background-color: #5a6268; }
 
 #used-words {
-    font-size: 0.85em;
-    color: #e9ecef; /* Light text */
-    margin-bottom: 8px;
+    font-size: 0.9em; /* Increased size */
+    color: white;
+    margin-bottom: 8px; /* Increased margin */
     word-wrap: break-word;
-    max-height: 40px; /* Adjusted height */
+    max-height: 55px; /* Increased height */
     width: 100%;
     overflow-y: auto;
     text-align: left;
-    padding: 6px;
-    border: 1px dashed rgba(255, 255, 255, 0.3); /* Faint border */
+    padding: 6px; /* Increased padding */
+    border: 1px dashed #eee;
     box-sizing: border-box;
-    background-color: rgba(0, 0, 0, 0.1); /* Slightly darker background */
-    border-radius: 4px;
 }
 
 #message {
-    color: #ffc107; /* Yellow/Warning color for messages */
+    color: black; 
     font-weight: bold;
-    min-height: 1.3em;
-    margin-top: 8px;
-    font-size: 0.9em; /* Adjusted size */
+    min-height: 1.3em; /* Adjusted min-height */
+    margin-top: 8px; /* Increased margin */
+    font-size: 1em; /* Increased size */
 }
 
 
-/* --- Hamburger Button Styling (Keep as before or adjust) --- */
-.hamburger-button {
-    position: absolute;
-    top: 15px; left: 15px;
-    z-index: 1001;
-    background: none; border: none; padding: 0; cursor: pointer;
-    width: 50px; height: 50px; overflow: hidden;
-}
-.hamburger-button img { display: block; width: 100%; height: 100%; object-fit: contain; }
-.hamburger-button:hover { opacity: 0.8; }
+/* --- Hamburger Button Styling --- */
+    .hamburger-button {
+        position: absolute; /* Position relative to body */
+        top: 15px;          /* Keep distance from top */
+        left: 15px;         /* Keep distance from left */
+        z-index: 1001;      /* Above everything */
+        background: none;   /* Remove default button background */
+        border: none;     /* Remove default button border */
+        padding: 0;       /* Remove padding */
+        cursor: pointer;
+        /* --- Adjust Size --- */
+        width: 75px;        /* New width */
+        height: 75px;       /* New height (equal to width for square) */
+        /* --- End Adjust Size --- */
+        overflow: hidden; /* Hide parts of image that overflow */
+    }
 
-/* --- Side Menu Panel Styling (Keep as before) --- */
-.side-menu { /* ... (styles as before) ... */
-    position: fixed; top: 0; left: -250px; width: 200px; height: 100%;
-    background-color: #343a40; color: white; padding: 80px 20px 20px 20px;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.2); transition: left 0.3s ease-in-out;
-    z-index: 1000; box-sizing: border-box; display: flex; flex-direction: column;
+    /* Style the image inside the hamburger button */
+    .hamburger-button img {
+        display: block; /* Remove extra space below image */
+        width: 100%;   /* Make image fill the button width */
+        height: 100%;  /* Make image fill the button height */
+        /* --- Changed object-fit --- */
+        object-fit: cover; /* Scale image to cover, maintain aspect ratio, crop overflow */
+        /* --- End Change --- */
+        /* Optional: Add border-radius if you want rounded corners on the logo */
+        /* border-radius: 5px; */
+    }
+
+    /* Optional hover effect */
+    .hamburger-button:hover {
+        opacity: 0.8; /* Example hover effect */
+    }
+
+ /* --- Side Menu Panel Styling (Adjusted Padding/Margins) --- */
+    .side-menu {
+        position: fixed; /* Fixed position relative to viewport */
+        top: 0;
+        left: -250px; /* Start off-screen to the left (adjust if width changes) */
+        width: 200px; /* Width of the menu */
+        height: 100%; /* Full viewport height */
+        background-color: #343a40; /* Dark background */
+        color: white;
+        /* --- Increased Top Padding --- */
+        padding: 105px 20px 20px 20px; 
+        /* --- End Increased Top Padding --- */
+        box-shadow: 2px 0 5px rgba(0,0,0,0.2); /* Optional shadow */
+        transition: left 0.3s ease-in-out; /* Smooth slide transition */
+        z-index: 1000; /* Below hamburger but above game container */
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column; /* Stack menu items vertically */
+    }
+
+    /* Style for when the menu is open (class added by JS) */
+    .side-menu.open {
+        left: 0; /* Slide into view */
+    }
+
+    /* Styling for items within the menu */
+    .side-menu .menu-item {
+        background: none;
+        border: none;
+        color: #f8f9fa;
+        padding: 18px 0; /* Vertical padding */
+        text-align: left;
+        font-size: 1.1em;
+        cursor: pointer;
+        width: 100%;
+        border-bottom: 1px solid #495057; /* Separator */
+        /* --- Added Bottom Margin --- */
+        margin-bottom: 10px; /* Add space below regular menu items */
+        /* --- End Added Bottom Margin --- */
+    }
+
+    .side-menu .menu-item:hover {
+        background-color: #495057; /* Highlight on hover */
+    }
+
+    /* --- Custom Letter Input Section Styling --- */
+    .custom-letter-section {
+        border-top: 1px solid #495057; /* Separator */
+        border-bottom: 1px solid #495057; /* Separator */
+        padding: 15px 0;
+        /* --- Added Bottom Margin --- */
+        margin: 10px 0 20px 0; /* Add more space below this section */
+        /* --- End Added Bottom Margin --- */
+    }
+    /* ... (keep styles for label, .custom-input, #set-custom-button, .menu-message) ... */
+    .custom-letter-section label { display: block; margin-bottom: 10px; font-size: 0.9em; color: #adb5bd; }
+    .custom-input { width: calc(100% - 16px); padding: 8px; margin-bottom: 8px; border: 1px solid #6c757d; background-color: #495057; color: white; border-radius: 4px; font-size: 1em; text-transform: uppercase; box-sizing: border-box; text-align: center; letter-spacing: 2px; }
+    .custom-input::placeholder { color: #adb5bd; opacity: 0.7; text-transform: none; letter-spacing: normal; }
+    #set-custom-button { background-color: #007bff; border-radius: 5px; text-align: center; margin-top: 15px; padding: 10px 0; border-bottom: none;  font-weight: bold; color: white; margin-bottom: 10px; }
+    #set-custom-button:hover { background-color: #138496; }
+    #new-board-button { background-color: #007bff; border-radius: 5px; text-align: center; padding: 10px 0; border-bottom: none;  font-weight: bold; color: white; margin-bottom: 10px; }
+    #new-board-button:hover { background-color: #0056b3; color: white; } 
+    .menu-message { font-size: 0.85em; color: #ffc107; margin-top: 5px; min-height: 1em; }
+
+
+
+/* --- Custom Letter Input Section Styling --- */
+.custom-letter-section {
+    border-top: 1px solid #495057; /* Separator */
+    border-bottom: 1px solid #495057; /* Separator */
+    padding: 15px 0;
+    margin: 10px 0;
 }
-.side-menu.open { left: 0; }
-/* ... (styles for .menu-item, #new-board-button, .custom-letter-section, etc. as before) ... */
-.side-menu .menu-item { background: none; border: none; color: #f8f9fa; padding: 15px 0; text-align: left; font-size: 1.1em; cursor: pointer; width: 100%; border-bottom: 1px solid #495057; margin-bottom: 10px; transition: background-color 0.2s; }
-.side-menu .menu-item:hover { background-color: #495057; }
-#new-board-button { background-color: #007bff; border-radius: 5px; text-align: center; padding: 10px 0; border-bottom: none; font-weight: bold; color: white; margin-bottom: 10px; }
-#new-board-button:hover { background-color: #0056b3; color: white; }
-.custom-letter-section { border-top: 1px solid #495057; border-bottom: 1px solid #495057; padding: 15px 0; margin: 10px 0 20px 0; }
-.custom-letter-section label { display: block; margin-bottom: 10px; font-size: 0.9em; color: #adb5bd; }
-.custom-input { width: calc(100% - 16px); padding: 8px; margin-bottom: 8px; border: 1px solid #6c757d; background-color: #495057; color: white; border-radius: 4px; font-size: 1em; text-transform: uppercase; box-sizing: border-box; text-align: center; letter-spacing: 2px; }
-.custom-input::placeholder { color: #adb5bd; opacity: 0.7; text-transform: none; letter-spacing: normal; }
-#set-custom-button { border-bottom: none; background-color: #17a2b8; text-align: center; font-weight: bold; margin-bottom: 0; margin-top: 15px; padding: 10px 0; border-radius: 5px; }
-#set-custom-button:hover { background-color: #138496; }
-.menu-message { font-size: 0.85em; color: #ffc107; margin-top: 5px; min-height: 1em; }
-.side-menu .menu-item.close-menu { margin-top: auto; border-top: 1px solid #495057; border-bottom: none; font-weight: bold; margin-bottom: 0; }
+
+.custom-letter-section label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 0.9em;
+    color: #adb5bd; /* Lighter text */
+}
+
+.custom-input {
+    width: calc(100% - 16px); /* Full width minus padding */
+    padding: 8px;
+    margin-bottom: 8px;
+    border: 1px solid #6c757d; /* Darker border */
+    background-color: #495057; /* Dark input background */
+    color: white;
+    border-radius: 4px;
+    font-size: 1em;
+    text-transform: uppercase; /* Force uppercase */
+    box-sizing: border-box;
+    text-align: center;
+    letter-spacing: 2px; /* Space out letters */
+}
+
+/* Style placeholder text */
+.custom-input::placeholder {
+    color: #adb5bd;
+    opacity: 0.7;
+    text-transform: none; /* Keep placeholder normal case */
+    letter-spacing: normal;
+}
+
+/* Style for the button within the custom section */
+#set-custom-button {
+    border-bottom: none; /* Remove default border from menu-item */
+    background-color: #17a2b8; /* Info color */
+    text-align: center;
+    font-weight: bold;
+}
+#set-custom-button:hover {
+    background-color: #138496;
+}
+
+/* Style for validation messages within the menu */
+.menu-message {
+    font-size: 0.85em;
+    color: #ffc107; /* Warning color */
+    margin-top: 5px;
+    min-height: 1em;
+}
 
