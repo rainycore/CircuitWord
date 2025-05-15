@@ -15,6 +15,7 @@ const MIN_TOTAL_VOWELS = 3;
 const MAX_VOWELS_PER_SIDE = 2;
 const MIN_WORD_LENGTH = 3;
 const MAX_GENERATION_ATTEMPTS = 200; // Safety limit for letter generation
+const litButtons = new Set();
 
 // Global variables to hold the current letters on the board
 let topLetters = [];
@@ -552,6 +553,17 @@ function updateGameState(validWord) {
      usedWords.push(validWord);
      usedWordsDisplay.innerText = "Used Words: " + usedWords.join(", ");
 
+    [...validWord].forEach(ch => {
+        // find the first matching button that’s not lit yet
+        const btn = [...document.querySelectorAll('.letter-button')]
+            .find(b => b.innerText === ch && !litButtons.has(b));
+
+        if (btn) {
+            btn.classList.add('used');   // apply the glow style
+            litButtons.add(btn);         // remember it’s lit
+        }
+    });
+
      // Set the required starting letter for the next word
      lastLetterOfPreviousWord = validWord[validWord.length - 1];
 
@@ -671,6 +683,8 @@ function clearBoardProgress() {
 
 /** Resets the entire game state AND generates a new board with new letters. */
 function restartGame() {
+    litButtons.forEach(b => b.classList.remove('used'));
+    litButtons.clear();
     showMessage("Generating new board...");
     if (generateNewLetters()) { // Check if generation was successful
         clearBoardProgress(); // Reset state variables for the new board
