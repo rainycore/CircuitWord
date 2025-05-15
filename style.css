@@ -109,7 +109,12 @@ body {
 .letter-button:hover { background-color: #ddd; }
 .letter-button:active { transform: scale(0.95); }
 .letter-button.selected { background-color: #aae; color: white; }
-.letter-button.last-selected { border: 3px solid #55f; } /* Thicker border */
+.letter-button.last-selected { border: 3px solid #55f; } 
+.letter-button.used {
+    background: #fff8b3;             /* pale-yellow “bulb” colour      */
+    box-shadow: 0 0 12px 4px #ffe46b;/* fuzzy glow                     */
+    transition: background 0.3s, box-shadow 0.3s;
+}
 
 /* --- Styling for Center Elements --- */
 #current-word-display {
