@@ -372,6 +372,29 @@ function redrawLines() {
 
 // --- Game Logic and Input Handling ---
 
+function renderUsedWords() {
+    if (!usedWordsDisplay) return;
+    usedWordsDisplay.innerHTML = "";
+    usedWords.forEach(word => {
+        const chip = document.createElement("span");
+        chip.className = "word-chip";
+        chip.textContent = word.toLowerCase();
+        usedWordsDisplay.appendChild(chip);
+    });
+}
+
+function updateStats() {
+    const lettersProgress = document.getElementById("letters-progress");
+    const wordsCount = document.getElementById("words-count");
+    if (lettersProgress) {
+        lettersProgress.textContent = `Letters used: ${litButtons.size} / ${REQUIRED_LETTERS}`;
+    }
+    if (wordsCount) {
+        wordsCount.textContent = `Words: ${usedWords.length}`;
+    }
+}
+
+
 /** Handles clicking on a letter button (for click path). */
 function handleLetterClick(letter, buttonElement) {
     clearMessage(); // Clear previous messages on new click
@@ -551,7 +574,8 @@ function checkWordWithAPI(wordToCheck) {
 function updateGameState(validWord) {
      // Add word to the list of used words for this board
      usedWords.push(validWord);
-     usedWordsDisplay.innerText = "Used Words: " + usedWords.join(", ");
+     renderUsedWords();
+     updateStats();
 
     [...validWord].forEach(ch => {
         // find the first matching button that’s not lit yet
@@ -674,6 +698,8 @@ function clearCurrentClickPath() {
 function clearBoardProgress() {
     usedWords = []; // Clear used words for this board
     lastLetterOfPreviousWord = null; // Reset starting constraint
+    renderUsedWords();
+    updateStats();
     usedWordsDisplay.innerText = "Used Words:";
     typedWordInput.value = ""; // Clear typed input
 
@@ -689,6 +715,8 @@ function restartGame() {
     if (generateNewLetters()) { // Check if generation was successful
         clearBoardProgress(); // Reset state variables for the new board
         setupBoard(); // Draw the board with the new letters
+        renderUsedWords();
+        updateStats();
         showMessage("New board ready");
         // Optional: Clear message after a delay
         // setTimeout(clearMessage, 1500);
@@ -787,6 +815,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Add event listener for the 'Enter' key on the TYPED input field
     if (typedWordInput) {
+        typedWordInput.focus();
         typedWordInput.addEventListener("keypress", function(event) {
             if (event.key === "Enter") {
                 event.preventDefault(); // Prevent default form submission behavior
