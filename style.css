@@ -1,50 +1,66 @@
-/* Basic Styling */
+/* --- Global / Background --- */
 body {
-    font-family: sans-serif;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     display: flex;
-    justify-content: center; /* Center game container horizontally */
-    align-items: center;    /* Center game container vertically */
-    min-height: 100vh;      /* Ensure body takes full viewport height */
-    background-color: #2e2e2e;
-    margin: 0; /* Remove default body margin */
-    position: relative; /* Needed for absolute positioning of menu */
-    overflow-x: hidden; /* Prevent horizontal scroll if menu slides */
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    position: relative;
+    overflow-x: hidden;
+
+    /* circuit-like dark background with grid dots */
+    background-color: #020617;
+    background-image:
+        radial-gradient(circle at 1px 1px, #0ea5e9 1px, transparent 0),
+        radial-gradient(circle at 1px 1px, #22c55e 1px, transparent 0);
+    background-size: 40px 40px;
+    background-position: 0 0, 20px 20px;
 }
 
-/* --- Grid Layout for Game Container --- */
+/* --- Game container becomes a "chip" --- */
 .game-container {
-    /* --- Increased Size --- */
-    width: 600px;  /* Increased from 450px */
-    height: 600px; /* Increased from 450px */
-    /* --- End Increased Size --- */
-
-    background-color: #2e2e2e;
-    border-radius: 12px; /* Slightly larger radius */
-    box-shadow: 0 5px 10px rgba(0,0,0,0.1); /* Slightly larger shadow */
-    padding: 15px; /* Increased padding */
+    width: 600px;
+    height: 600px;
+    padding: 18px;
     box-sizing: border-box;
-    position: relative; /* Needed for absolute positioning of canvas */
 
-    /* === Key Grid Setup === */
+    background: radial-gradient(circle at top left, #0f172a, #020617 55%);
+    border-radius: 26px;
+    border: 1px solid rgba(56, 189, 248, 0.7);
+    box-shadow:
+        0 0 0 1px rgba(15, 23, 42, 0.9),
+        0 0 25px rgba(56, 189, 248, 0.4),
+        0 0 60px rgba(34, 197, 94, 0.3);
+
+    position: relative;
     display: grid;
-    /* Rows: top letters, center area, bottom letters */
-    /* Increased fixed size from 60px -> 80px */
     grid-template-rows: 80px 1fr 80px;
-    /* Columns: left letters, center area, right letters */
-    /* Increased fixed size from 60px -> 80px */
     grid-template-columns: 80px 1fr 80px;
-    /* Naming the grid areas */
     grid-template-areas:
         "top-left top top-right"
         "left center right"
         "bottom-left bottom bottom-right";
-    gap: 8px; /* Increased gap */
-    /* ======================= */
-
-    z-index: 5; /* Below side menu and hamburger */
+    gap: 8px;
+    z-index: 5;
+    overflow: hidden;
 }
 
-/* Canvas for drawing lines - Overlay */
+/* subtle “trace” overlay */
+.game-container::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(120deg, rgba(56, 189, 248, 0.16) 1px, transparent 0),
+        linear-gradient(210deg, rgba(34, 197, 94, 0.16) 1px, transparent 0);
+    background-size: 46px 46px;
+    mix-blend-mode: screen;
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+/* keep canvas over chip traces but under letters */
 #line-canvas {
     position: absolute;
     top: 0;
@@ -52,142 +68,179 @@ body {
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 1; /* Below letters and center */
+    z-index: 1;
 }
 
-/* --- Positioning Sides in the Grid --- */
-.side {
+/* --- Circuit pads (letter buttons) --- */
+.letter-button {
+    width: 55px;
+    height: 55px;
+    border-radius: 14px;
+    border: 1px solid rgba(56, 189, 248, 0.7);
+    background: radial-gradient(circle at 30% 20%, #1d283a, #020617 70%);
+    color: #e5e7eb;
+    font-size: 1.5em;
+    font-weight: 700;
     display: flex;
+    justify-content: center;
     align-items: center;
-    justify-content: space-around;
-    z-index: 2; /* Above canvas */
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(15, 23, 42, 0.9);
+    transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+    margin: 3px;
+    z-index: 3;
 }
 
-/* Assign each side div to its named grid area */
-#top-side { grid-area: top; }
-#bottom-side { grid-area: bottom; }
-#left-side { grid-area: left; flex-direction: column; } /* Stack vertically */
-#right-side { grid-area: right; flex-direction: column; } /* Stack vertically */
+.letter-button:hover {
+    background: radial-gradient(circle at 30% 20%, #0f172a, #020617 70%);
+    box-shadow:
+        0 0 10px rgba(56, 189, 248, 0.5),
+        0 0 18px rgba(56, 189, 248, 0.3);
+}
 
-/* --- Center Area --- */
+.letter-button:active {
+    transform: translateY(1px) scale(0.97);
+}
+
+/* current path highlight */
+.letter-button.selected {
+    background: #22c55e;
+    color: #020617;
+    box-shadow: 0 0 16px rgba(34, 197, 94, 0.9);
+}
+
+.letter-button.last-selected {
+    border: 2px solid #facc15;
+    box-shadow: 0 0 20px rgba(250, 204, 21, 0.9);
+}
+
+/* letters that have been used at least once */
+.letter-button.used {
+    background: #1e293b;
+    color: #fde68a;
+    box-shadow: 0 0 16px rgba(249, 115, 22, 0.7);
+}
+
+/* --- Center chip area --- */
 .center-display {
-    grid-area: center; /* Place in the 'center' grid area */
+    grid-area: center;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 15px; /* Increased padding */
-    box-sizing: border-box;
-    overflow: hidden;
-    z-index: 6; /* Above letters/canvas, below menu */
-    background-color: #00bf63; /* Make slightly transparent */
-    border-radius: 10px; /* Increased radius */
+    justify-content: space-between;
+    align-items: stretch;
+    padding: 14px 16px;
+    background: rgba(15, 23, 42, 0.95);
+    border-radius: 18px;
+    border: 1px solid rgba(148, 163, 184, 0.5);
+    z-index: 6;
 }
 
-/* --- Letter Button Styling --- */
-.letter-button {
-    border: 1px solid #ccc;
-    padding: 0;
-    /* --- Increased Size --- */
-    width: 55px;  /* Increased from 40px */
-    height: 55px; /* Increased from 40px */
-    font-size: 1.5em; /* Increased font size */
-    /* --- End Increased Size --- */
-    display: flex;
-    justify-content: center;
-    align-items: center;
+/* Title / tagline / stats */
+.game-header {
     text-align: center;
-    border-radius: 6px; /* Increased radius */
-    background-color: #eee;
-    font-weight: bold;
-    cursor: pointer;
-    margin: 3px; /* Adjusted margin */
-    box-sizing: border-box;
-    transition: background-color 0.2s, transform 0.1s;
-    z-index: 3; /* Ensure buttons are clickable (above canvas) */
-}
-.letter-button:hover { background-color: #ddd; }
-.letter-button:active { transform: scale(0.95); }
-.letter-button.selected { background-color: #aae; color: white; }
-.letter-button.last-selected { border: 3px solid #55f; } 
-.letter-button.used {
-    background: #fff8b3;             /* pale-yellow “bulb” colour      */
-    box-shadow: 0 0 12px 4px #ffe46b;/* fuzzy glow                     */
-    transition: background 0.3s, box-shadow 0.3s;
+    margin-bottom: 6px;
 }
 
-/* --- Styling for Center Elements --- */
+.game-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #e5e7eb;
+}
+
+.game-tagline {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    margin-top: 2px;
+}
+
+.game-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #a5b4fc;
+    margin-top: 8px;
+}
+
+/* current word + message */
 #current-word-display {
-    font-size: 1.6em; /* Increased size */
+    font-size: 1.5em;
     font-weight: bold;
-    min-height: 1.4em; /* Adjusted min-height */
-    margin-bottom: 12px; /* Increased margin */
-    letter-spacing: 3px; /* Increased spacing */
-    border-bottom: 1px solid #eee;
-    padding-bottom: 8px;
-    color: #555;
-    width: 100%;
-    box-sizing: border-box;
+    letter-spacing: 0.2em;
+    color: #e5e7eb;
     text-align: center;
+    border-bottom: 1px solid #1f2937;
+    padding-bottom: 6px;
+    margin-bottom: 6px;
 }
-#current-word-display span { color: #0056b3; }
 
+#current-word-display span { color: #38bdf8; }
+
+/* hide the input visually but keep it usable if you still want typing */
 #word-input-typed {
-    width: calc(100% - 24px); /* Adjusted for padding */
-    padding: 10px; /* Increased padding */
-    margin-bottom: 12px; /* Increased margin */
-    border: 1px solid #aaa;
-    border-radius: 5px;
-    box-sizing: border-box;
-    font-size: 1em; /* Increased size */
+    opacity: 0.0;
+    height: 0;
+    padding: 0;
+    margin: 0;
+    border: none;
 }
 
+/* controls row */
 .controls {
-    margin-bottom: 10px; /* Increased margin */
+    margin: 6px 0 8px 0;
     display: flex;
-    flex-wrap: wrap; /* Allow buttons to wrap */
     justify-content: center;
-    gap: 8px; /* Increased gap */
-    width: 100%;
+    gap: 6px;
 }
 
 .controls button {
-    padding: 10px 14px; /* Increased padding */
+    padding: 8px 10px;
+    border-radius: 999px;
+    border: 1px solid #4b5563;
+    background: #111827;
+    color: #e5e7eb;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     cursor: pointer;
-    border: none;
-    background-color: #6c757d;
-    color: white;
-    border-radius: 5px;
-    transition: background-color 0.2s;
-    font-size: 0.95em; /* Increased size */
-    flex-grow: 1;
-    min-width: 90px; /* Increased min-width */
+    transition: background 0.15s, border-color 0.15s;
 }
-.controls button:hover { background-color: #5a6268; }
-#submit-button { background-color: #6c757d; }
-#submit-button:hover { background-color: #5a6268; }
 
+.controls button:hover {
+    background: #1f2937;
+    border-color: #38bdf8;
+}
+
+/* used words as chips, Letter-Boxed style */
 #used-words {
-    font-size: 0.9em; /* Increased size */
-    color: white;
-    margin-bottom: 8px; /* Increased margin */
-    word-wrap: break-word;
-    max-height: 55px; /* Increased height */
-    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    max-height: 70px;
     overflow-y: auto;
-    text-align: left;
-    padding: 6px; /* Increased padding */
-    border: 1px dashed #eee;
-    box-sizing: border-box;
+    padding: 4px 0;
+    margin-bottom: 6px;
+    font-size: 0.8rem;
+    color: #e5e7eb;
 }
 
-#message {
-    color: black; 
-    font-weight: bold;
-    min-height: 1.3em; /* Adjusted min-height */
-    margin-top: 8px; /* Increased margin */
-    font-size: 1em; /* Increased size */
+.word-chip {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #020617;
+    border: 1px solid rgba(148, 163, 184, 0.6);
+    text-transform: lowercase;
 }
+
+/* message area */
+#message {
+    min-height: 1.2em;
+    font-size: 0.85rem;
+    color: #facc15;
+    text-align: center;
+}
+
+/* keep existing hamburger + side-menu styles, or tweak colors to match new palette */
 
 
 /* --- Hamburger Button Styling --- */
