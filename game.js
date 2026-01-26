@@ -815,7 +815,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Add event listener for the 'Enter' key on the TYPED input field
     if (typedWordInput) {
-        typedWordInput.focus();
+        // Only autofocus on desktop (width > 768px) to prevent mobile keyboard popup
+        if (window.innerWidth > 768) {
+            typedWordInput.focus();
+        }
         typedWordInput.addEventListener("keypress", function(event) {
             if (event.key === "Enter") {
                 event.preventDefault(); // Prevent default form submission behavior

@@ -1,66 +1,175 @@
-/* --- Global / Background --- */
+/* --- style.css --- */
+
+/* Import a tech-style font */
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
+
 body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family: 'Roboto Mono', monospace; /* Hacker font */
+    background-color: #051a05; /* Dark circuit board green */
+    background-image: 
+        linear-gradient(rgba(0, 255, 0, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 0, 0.03) 1px, transparent 1px);
+    background-size: 20px 20px; /* Grid pattern */
+    color: #e0f0e0;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    position: relative;
-    overflow-x: hidden;
-
-    /* circuit-like dark background with grid dots */
-    background-color: #020617;
-    background-image:
-        radial-gradient(circle at 1px 1px, #0ea5e9 1px, transparent 0),
-        radial-gradient(circle at 1px 1px, #22c55e 1px, transparent 0);
-    background-size: 40px 40px;
-    background-position: 0 0, 20px 20px;
 }
 
-/* --- Game container becomes a "chip" --- */
+/* The "Chip" Container */
 .game-container {
     width: 600px;
     height: 600px;
-    padding: 18px;
-    box-sizing: border-box;
-
-    background: radial-gradient(circle at top left, #0f172a, #020617 55%);
-    border-radius: 26px;
-    border: 1px solid rgba(56, 189, 248, 0.7);
-    box-shadow:
-        0 0 0 1px rgba(15, 23, 42, 0.9),
-        0 0 25px rgba(56, 189, 248, 0.4),
-        0 0 60px rgba(34, 197, 94, 0.3);
-
-    position: relative;
+    background: #0a250a; /* Darker chip body */
+    border: 4px solid #444; /* Chip casing */
+    border-radius: 12px;
+    box-shadow: 
+        0 0 0 4px #051a05, /* Gap */
+        0 0 0 6px #daa520, /* Gold pins outline */
+        0 0 30px rgba(0, 255, 0, 0.2);
+    
     display: grid;
+    /* Fixed Grid Layout */
     grid-template-rows: 80px 1fr 80px;
     grid-template-columns: 80px 1fr 80px;
     grid-template-areas:
-        "top-left top top-right"
+        ". top ."
         "left center right"
-        "bottom-left bottom bottom-right";
-    gap: 8px;
-    z-index: 5;
-    overflow: hidden;
+        ". bottom .";
+    position: relative;
+    box-sizing: border-box;
 }
 
-/* subtle “trace” overlay */
-.game-container::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image:
-        linear-gradient(120deg, rgba(56, 189, 248, 0.16) 1px, transparent 0),
-        linear-gradient(210deg, rgba(34, 197, 94, 0.16) 1px, transparent 0);
-    background-size: 46px 46px;
-    mix-blend-mode: screen;
-    opacity: 0.35;
-    pointer-events: none;
+/* --- The Sides (Pin Banks) --- */
+.side {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    transition: opacity 0.3s ease;
 }
 
-/* keep canvas over chip traces but under letters */
+/* Grid Area Assignments */
+#top-side    { grid-area: top; flex-direction: row; }
+#bottom-side { grid-area: bottom; flex-direction: row; }
+#left-side   { grid-area: left; flex-direction: column; }
+#right-side  { grid-area: right; flex-direction: column; }
+
+/* UX: Dim the side that is currently blocked */
+.side.disabled-side {
+    opacity: 0.2;
+    pointer-events: none; /* Prevent clicking */
+    filter: grayscale(100%);
+}
+
+/* --- Circuit Pads (Buttons) --- */
+.letter-button {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #b8860b, #daa520); /* Gold plated */
+    border: 2px solid #5c4305;
+    border-radius: 4px; /* Square with slight roundness like chips */
+    color: #000;
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 700;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: inset 2px 2px 0px rgba(255,255,255,0.4), 0 4px 5px rgba(0,0,0,0.5);
+    transition: transform 0.1s, box-shadow 0.1s;
+    z-index: 2;
+}
+
+.letter-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px #daa520; /* Gold glow */
+}
+
+.letter-button:active {
+    transform: translateY(1px);
+}
+
+/* Selected state (Part of current word) */
+.letter-button.selected {
+    background: #00ff00; /* Neon Green LED */
+    color: #000;
+    box-shadow: 0 0 20px #00ff00, inset 0 0 10px #fff;
+    border-color: #004d00;
+}
+
+/* Last selected (Current cursor) */
+.letter-button.last-selected {
+    background: #fff; /* White hot */
+    box-shadow: 0 0 25px #fff;
+}
+
+/* Used state (Has been used in a previous word) */
+.letter-button.used {
+    background: #333; /* Burnt out / dark */
+    color: #888;
+    border-color: #222;
+}
+
+/* --- Center Display (Screen) --- */
+.center-display {
+    grid-area: center;
+    background: #000;
+    border: 2px solid #333;
+    border-radius: 8px;
+    margin: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: inset 0 0 20px rgba(0, 50, 0, 0.5);
+    z-index: 1;
+}
+
+.game-title {
+    text-align: center;
+    color: #00ff00;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 1.2rem;
+    text-shadow: 0 0 5px #00ff00;
+}
+
+#current-word-display {
+    text-align: center;
+    font-size: 2rem;
+    color: #fff;
+    min-height: 40px;
+    border-bottom: 2px dashed #333;
+    margin: 10px 0;
+    text-shadow: 0 0 10px #fff;
+}
+
+/* Controls */
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.controls button {
+    background: #003300;
+    border: 1px solid #00ff00;
+    color: #00ff00;
+    font-family: 'Roboto Mono', monospace;
+    padding: 8px 16px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+}
+
+.controls button:hover {
+    background: #00ff00;
+    color: #000;
+    box-shadow: 0 0 10px #00ff00;
+}
+
+/* Canvas styling */
 #line-canvas {
     position: absolute;
     top: 0;
@@ -68,180 +177,9 @@ body {
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 1;
+    z-index: 0;
 }
 
-/* --- Circuit pads (letter buttons) --- */
-.letter-button {
-    width: 55px;
-    height: 55px;
-    border-radius: 14px;
-    border: 1px solid rgba(56, 189, 248, 0.7);
-    background: radial-gradient(circle at 30% 20%, #1d283a, #020617 70%);
-    color: #e5e7eb;
-    font-size: 1.5em;
-    font-weight: 700;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    box-shadow: 0 0 10px rgba(15, 23, 42, 0.9);
-    transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
-    margin: 3px;
-    z-index: 3;
-}
-
-.letter-button:hover {
-    background: radial-gradient(circle at 30% 20%, #0f172a, #020617 70%);
-    box-shadow:
-        0 0 10px rgba(56, 189, 248, 0.5),
-        0 0 18px rgba(56, 189, 248, 0.3);
-}
-
-.letter-button:active {
-    transform: translateY(1px) scale(0.97);
-}
-
-/* current path highlight */
-.letter-button.selected {
-    background: #22c55e;
-    color: #020617;
-    box-shadow: 0 0 16px rgba(34, 197, 94, 0.9);
-}
-
-.letter-button.last-selected {
-    border: 2px solid #facc15;
-    box-shadow: 0 0 20px rgba(250, 204, 21, 0.9);
-}
-
-/* letters that have been used at least once */
-.letter-button.used {
-    background: #1e293b;
-    color: #fde68a;
-    box-shadow: 0 0 16px rgba(249, 115, 22, 0.7);
-}
-
-/* --- Missing Grid Area Assignments & Alignment --- */
-
-/* Place the containers into their defined grid areas */
-#top-side {
-    grid-area: top;
-    flex-direction: row;
-}
-
-#bottom-side {
-    grid-area: bottom;
-    flex-direction: row;
-}
-
-#left-side {
-    grid-area: left;
-    flex-direction: column;
-}
-
-#right-side {
-    grid-area: right;
-    flex-direction: column;
-}
-
-/* Common styling for all sides to center the buttons */
-.side {
-    display: flex;
-    justify-content: space-evenly; /* Distribute buttons evenly */
-    align-items: center;           /* Center them on the cross-axis */
-    width: 100%;
-    height: 100%;
-}
-
-/* --- Center chip area --- */
-.center-display {
-    grid-area: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: stretch;
-    padding: 14px 16px;
-    background: rgba(15, 23, 42, 0.95);
-    border-radius: 18px;
-    border: 1px solid rgba(148, 163, 184, 0.5);
-    z-index: 6;
-}
-
-/* Title / tagline / stats */
-.game-header {
-    text-align: center;
-    margin-bottom: 6px;
-}
-
-.game-title {
-    font-size: 1.3rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    color: #e5e7eb;
-}
-
-.game-tagline {
-    font-size: 0.8rem;
-    color: #9ca3af;
-    margin-top: 2px;
-}
-
-.game-stats {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.75rem;
-    color: #a5b4fc;
-    margin-top: 8px;
-}
-
-/* current word + message */
-#current-word-display {
-    font-size: 1.5em;
-    font-weight: bold;
-    letter-spacing: 0.2em;
-    color: #e5e7eb;
-    text-align: center;
-    border-bottom: 1px solid #1f2937;
-    padding-bottom: 6px;
-    margin-bottom: 6px;
-}
-
-#current-word-display span { color: #38bdf8; }
-
-/* hide the input visually but keep it usable if you still want typing */
-#word-input-typed {
-    opacity: 0.0;
-    height: 0;
-    padding: 0;
-    margin: 0;
-    border: none;
-}
-
-/* controls row */
-.controls {
-    margin: 6px 0 8px 0;
-    display: flex;
-    justify-content: center;
-    gap: 6px;
-}
-
-.controls button {
-    padding: 8px 10px;
-    border-radius: 999px;
-    border: 1px solid #4b5563;
-    background: #111827;
-    color: #e5e7eb;
-    font-size: 0.78rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    cursor: pointer;
-    transition: background 0.15s, border-color 0.15s;
-}
-
-.controls button:hover {
-    background: #1f2937;
-    border-color: #38bdf8;
-}
 
 /* used words as chips, Letter-Boxed style */
 #used-words {
@@ -432,3 +370,91 @@ body {
     min-height: 1em;
 }
 
+/* --- Mobile / Responsive Overrides --- */
+@media screen and (max-width: 768px), screen and (max-height: 768px) {
+    /* Make the game container responsive and square */
+    .game-container {
+        /* Use the smaller of width or height to ensure it fits on screen */
+        width: min(95vw, 95vh, 600px);
+        height: min(95vw, 95vh, 600px);
+        padding: 5px; /* Reduce padding to save space */
+        
+        /* Shrink the outer grid tracks (where buttons live) from 80px to 50px */
+        grid-template-rows: 50px 1fr 50px;
+        grid-template-columns: 50px 1fr 50px;
+        
+        border-radius: 16px;
+    }
+
+    /* Scale down the letter buttons */
+    .letter-button {
+        width: 38px;
+        height: 38px;
+        font-size: 1.1em;
+        margin: 1px;
+        border-radius: 10px;
+        
+        /* Prevent double-tap zoom issues on buttons */
+        touch-action: manipulation;
+        /* Prevent text selection when tapping fast */
+        user-select: none;
+        -webkit-user-select: none;
+    }
+
+    /* Compact the Center Display */
+    .center-display {
+        padding: 8px;
+    }
+    
+    .game-title {
+        font-size: 1rem;
+    }
+    
+    /* Hide the tagline on small screens to reduce clutter */
+    .game-tagline {
+        display: none;
+    }
+    
+    .game-stats {
+        font-size: 0.7rem;
+        margin-top: 5px;
+    }
+    
+    #current-word-display {
+        font-size: 1.2em;
+        margin-bottom: 5px;
+        padding-bottom: 5px;
+    }
+
+    /* Wrap controls if necessary and shrink buttons */
+    .controls {
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    
+    .controls button {
+        padding: 6px 10px;
+        font-size: 0.7rem;
+    }
+
+    /* Adjust the Hamburger Menu button size/position */
+    .hamburger-button {
+        width: 50px;
+        height: 50px;
+        top: 5px;
+        left: 5px;
+    }
+}
+
+/* Extra tweak for very small screens (e.g. older iPhones) */
+@media screen and (max-width: 360px) {
+    .game-container {
+        grid-template-rows: 42px 1fr 42px;
+        grid-template-columns: 42px 1fr 42px;
+    }
+    .letter-button {
+        width: 32px;
+        height: 32px;
+        font-size: 1em;
+    }
+}
