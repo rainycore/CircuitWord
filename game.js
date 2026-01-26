@@ -1,6 +1,5 @@
 /**
- * CircuitWord Game Logic
- * Refactored for cleanliness, state management, and modern JS practices.
+ * CircuitWord Game Logic - Refactored for Keyboard & Click Interactivity
  */
 
 class CircuitWord {
@@ -20,41 +19,30 @@ class CircuitWord {
 
         // --- State ---
         this.state = {
-            sides: { top: [], left: [], right: [], bottom: [] }, // Letters per side
+            sides: { top: [], left: [], right: [], bottom: [] },
             allLetters: [],
             usedWords: [],
             litButtons: new Set(),
             currentWord: "",
-            currentPath: [], // Array of {letter, x, y}
-            lastLetter: null // The ending letter of the previous word
+            currentPath: [],
+            lastLetter: null 
         };
 
-        // --- DOM Cache ---
         this.dom = {};
         this.canvasCtx = null;
         
-        // Bind methods to 'this' where needed
         this.resizeCanvas = this.resizeCanvas.bind(this);
-        this.handleKeyPress = this.handleKeyPress.bind(this);
     }
 
-    /**
-     * Entry point to start the game.
-     */
     init() {
         this.cacheDOM();
         this.bindEvents();
         this.generateNewGame();
         
-        // Handle window resizing for the canvas
         window.addEventListener('resize', this.resizeCanvas);
-        // Initial canvas size set
         setTimeout(this.resizeCanvas, 0);
     }
 
-    /**
-     * Cache all DOM references to avoid repeated lookups.
-     */
     cacheDOM() {
         this.dom = {
             container: document.querySelector(".game-container"),
@@ -80,11 +68,8 @@ class CircuitWord {
         }
     }
 
-    /**
-     * Bind event listeners to controls and inputs.
-     */
     bindEvents() {
-        // Game Controls
+        // Game UI Controls
         document.getElementById("submit-button").addEventListener("click", () => this.submitWord());
         document.getElementById("delete-last-button").addEventListener("click", () => this.deleteLastLetter());
         document.getElementById("clear-current-button").addEventListener("click", () => this.clearCurrentPath());
@@ -98,27 +83,27 @@ class CircuitWord {
         });
         document.getElementById("set-custom-button").addEventListener("click", () => this.setCustomBoard());
 
-        // Keyboard Input
-        if (this.dom.input) {
-            // Only focus on desktop to avoid mobile keyboard popup
-            if (window.innerWidth > 768) this.dom.input.focus();
-            this.dom.input.addEventListener("keypress", this.handleKeyPress);
-        }
-    }
+        // Global Keyboard Input
+        document.addEventListener("keydown", (e) => {
+            // Prevent game input if user is typing in menu fields
+            if (e.target.tagName === 'INPUT' && e.target.id !== 'word-input-typed') return;
 
-    handleKeyPress(e) {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            this.submitWord();
-        }
+            const key = e.key.toUpperCase();
+
+            if (/^[A-Z]$/.test(key)) {
+                this.handleLetterInput(key);
+            } else if (e.key === "Backspace") {
+                this.deleteLastLetter();
+            } else if (e.key === "Enter") {
+                this.submitWord();
+            }
+        });
     }
 
     // --- Game Logic: Generation ---
 
     generateNewGame() {
         this.showMessage("Generating new board...");
-        
-        // Create pool: 1 of each consonant, 3 of each vowel
         const pool = [...this.CONFIG.CONSONANTS, ...this.CONFIG.VOWELS, ...this.CONFIG.VOWELS, ...this.CONFIG.VOWELS];
         
         let attempts = 0;
@@ -126,7 +111,6 @@ class CircuitWord {
 
         while (!success && attempts < this.CONFIG.MAX_GEN_ATTEMPTS) {
             attempts++;
-            // Shuffle and pick 12 unique letters
             this.shuffleArray(pool);
             const selection = Array.from(new Set(pool)).slice(0, this.CONFIG.REQUIRED_LETTERS);
             
@@ -135,7 +119,6 @@ class CircuitWord {
             const vowelsCount = selection.filter(l => this.CONFIG.VOWELS.includes(l)).length;
             if (vowelsCount < this.CONFIG.MIN_TOTAL_VOWELS) continue;
 
-            // Distribute to sides
             this.shuffleArray(selection);
             const sides = {
                 top: selection.slice(0, 3),
@@ -144,7 +127,6 @@ class CircuitWord {
                 bottom: selection.slice(9, 12)
             };
 
-            // Check max vowels per side
             const isValid = Object.values(sides).every(side => 
                 side.filter(l => this.CONFIG.VOWELS.includes(l)).length <= this.CONFIG.MAX_VOWELS_PER_SIDE
             );
@@ -161,8 +143,7 @@ class CircuitWord {
             this.renderBoard();
             this.showMessage("New board ready");
         } else {
-            this.showMessage("Error generating board. Retrying...");
-            this.generateNewGame(); // Retry
+            this.generateNewGame(); 
         }
     }
 
@@ -170,10 +151,8 @@ class CircuitWord {
         const inputs = ['top', 'left', 'right', 'bottom'].map(id => 
             document.getElementById(`custom-${id}`).value.trim().toUpperCase()
         );
-
         const allLetters = inputs.join('').split('');
         
-        // Basic Validation
         if (allLetters.length !== 12) return this.showMenuMessage("Must have exactly 12 letters.");
         if (new Set(allLetters).size !== 12) return this.showMenuMessage("Letters must be unique.");
         if (!allLetters.every(l => /^[A-Z]$/.test(l))) return this.showMenuMessage("Invalid characters.");
@@ -201,38 +180,35 @@ class CircuitWord {
     }
 
     clearBoardProgress() {
-        // Keeps the letters, but resets progress
         this.resetGameState();
-        // Remove 'used' class from buttons
         document.querySelectorAll('.letter-button').forEach(btn => btn.classList.remove('used'));
         this.showMessage("Board reset");
     }
 
-    // --- Game Logic: Gameplay ---
+    // --- Unified Input Handling ---
 
-    handleLetterClick(letter, btnElement) {
+    handleLetterInput(letter) {
         this.clearMessage();
+        const btnElement = document.getElementById(`btn-${letter}`);
 
-        // Rule 1: Cannot click same letter immediately
+        if (!btnElement) {
+            return this.showMessage(`"${letter}" is not on the board`);
+        }
+
         if (this.state.currentPath.length > 0) {
             const last = this.state.currentPath[this.state.currentPath.length - 1];
             if (last.letter === letter) return;
-            
-            // Rule 2: Cannot click same side immediately
+
             if (this.findSide(last.letter) === this.findSide(letter)) {
                 return this.showMessage("Cannot use same side consecutively");
             }
         }
 
-        // Rule 3: Must start with required letter
         if (this.state.currentPath.length === 0 && this.state.lastLetter) {
             if (letter !== this.state.lastLetter) {
                 return this.showMessage(`Must start with "${this.state.lastLetter}"`);
             }
         }
-
-        // Rule 4: Chaining check (Start of new word cannot match side of previous word's start)
-        // (This rule varies by implementation, adhering to standard Letter Boxed rules here: just adjacent checks)
 
         this.addToPath(letter, btnElement);
     }
@@ -244,9 +220,7 @@ class CircuitWord {
     }
 
     deleteLastLetter() {
-        // Cannot delete the "anchor" letter if it exists
         const minLength = this.state.lastLetter ? 1 : 0;
-        
         if (this.state.currentPath.length > minLength) {
             this.state.currentPath.pop();
             this.state.currentWord = this.state.currentPath.map(p => p.letter).join('');
@@ -259,8 +233,6 @@ class CircuitWord {
     clearCurrentPath() {
         this.state.currentWord = "";
         this.state.currentPath = [];
-        
-        // If there is a required starting letter, reset to that
         if (this.state.lastLetter) {
             const btn = document.getElementById(`btn-${this.state.lastLetter}`);
             if (btn) this.addToPath(this.state.lastLetter, btn);
@@ -270,58 +242,24 @@ class CircuitWord {
     }
 
     async submitWord() {
-        let word = this.dom.input.value.trim().toUpperCase();
-        const isTyped = word.length > 0;
-        
-        if (!isTyped) word = this.state.currentWord;
-
-        // Validation
+        let word = this.state.currentWord;
         if (word.length < this.CONFIG.MIN_WORD_LENGTH) return this.showMessage("Too short");
         if (this.state.usedWords.includes(word)) return this.showMessage("Already used");
-        if (this.state.lastLetter && word[0] !== this.state.lastLetter) return this.showMessage(`Must start with ${this.state.lastLetter}`);
-        
-        // Validate letters exist and connectivity (for typed words)
-        if (isTyped) {
-            if (!this.validateTypedWord(word)) return;
-        }
 
-        // API Check
         try {
             this.showMessage("Checking...");
             const response = await fetch(`${this.CONFIG.API_URL}${word.toLowerCase()}`);
             if (!response.ok) throw new Error("Unknown word");
-            
-            // Success
             this.handleSuccess(word);
-            if (isTyped) this.dom.input.value = "";
-
         } catch (e) {
             this.showMessage("Not in word list");
         }
-    }
-
-    validateTypedWord(word) {
-        for (let i = 0; i < word.length; i++) {
-            const l = word[i];
-            if (!this.state.allLetters.includes(l)) {
-                this.showMessage(`"${l}" is not on the board`);
-                return false;
-            }
-            if (i > 0) {
-                if (this.findSide(word[i]) === this.findSide(word[i-1])) {
-                    this.showMessage("Cannot use same side consecutively");
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
     handleSuccess(word) {
         this.state.usedWords.push(word);
         this.state.lastLetter = word[word.length - 1];
         
-        // Mark letters as "lit"
         [...word].forEach(l => {
             const btn = document.getElementById(`btn-${l}`);
             if (btn && !this.state.litButtons.has(l)) {
@@ -330,23 +268,21 @@ class CircuitWord {
             }
         });
 
-        // Add to displayed list
         const chip = document.createElement("span");
         chip.className = "word-chip";
         chip.innerText = word.toLowerCase();
         this.dom.usedWords.appendChild(chip);
 
         this.updateStats();
-        this.clearCurrentPath(); // Will reset to new lastLetter
+        this.clearCurrentPath();
         this.showMessage("");
         
-        // Check Win Condition
         if (this.state.litButtons.size === 12) {
             this.showMessage(`🎉 Puzzle Solved in ${this.state.usedWords.length} words!`);
         }
     }
 
-    // --- UI & Rendering ---
+    // --- UI Rendering ---
 
     renderBoard() {
         Object.entries(this.state.sides).forEach(([sideName, letters]) => {
@@ -357,12 +293,11 @@ class CircuitWord {
                 btn.className = "letter-button";
                 btn.id = `btn-${letter}`;
                 btn.innerText = letter;
-                btn.addEventListener("click", (e) => this.handleLetterClick(letter, btn));
+                btn.addEventListener("click", () => this.handleLetterInput(letter));
                 container.appendChild(btn);
             });
         });
         
-        // Delay canvas update to ensure DOM is reflowed
         setTimeout(() => {
             this.resizeCanvas();
             this.clearCurrentPath();
@@ -371,14 +306,11 @@ class CircuitWord {
 
     updateUI() {
         this.dom.currentWord.innerText = this.state.currentWord;
-        
-        // Highlight logic
         document.querySelectorAll('.letter-button').forEach(b => b.classList.remove('selected', 'last-selected'));
         this.state.currentPath.forEach((p, idx) => {
             p.element.classList.add('selected');
             if (idx === this.state.currentPath.length - 1) p.element.classList.add('last-selected');
         });
-
         this.drawLines();
     }
 
@@ -386,24 +318,23 @@ class CircuitWord {
         if (!this.dom.canvas) return;
         this.dom.canvas.width = this.dom.container.clientWidth;
         this.dom.canvas.height = this.dom.container.clientHeight;
-        this.drawLines(); // Redraw if path exists
+        this.drawLines();
     }
 
     drawLines() {
         const ctx = this.canvasCtx;
         const path = this.state.currentPath;
-        if (!ctx) return;
+        if (!ctx || path.length < 2) {
+            if (ctx) ctx.clearRect(0, 0, this.dom.canvas.width, this.dom.canvas.height);
+            return;
+        }
 
         ctx.clearRect(0, 0, this.dom.canvas.width, this.dom.canvas.height);
-        if (path.length < 2) return;
-
         const canvasRect = this.dom.canvas.getBoundingClientRect();
-
         ctx.beginPath();
         ctx.lineWidth = 3;
-        ctx.strokeStyle = "#38bdf8"; // match css var --accent-blue
+        ctx.strokeStyle = "#38bdf8";
 
-        // Helper to get center of a button
         const getCenter = (el) => {
             const r = el.getBoundingClientRect();
             return {
@@ -414,15 +345,12 @@ class CircuitWord {
 
         const start = getCenter(path[0].element);
         ctx.moveTo(start.x, start.y);
-
         for (let i = 1; i < path.length; i++) {
             const pt = getCenter(path[i].element);
             ctx.lineTo(pt.x, pt.y);
         }
         ctx.stroke();
     }
-
-    // --- Helpers ---
 
     updateStats() {
         this.dom.statsLetters.innerText = `Letters used: ${this.state.litButtons.size} / 12`;
@@ -438,14 +366,11 @@ class CircuitWord {
 
     showMessage(msg) { this.dom.message.innerText = msg; }
     clearMessage() { this.dom.message.innerText = ""; }
-    
     showMenuMessage(msg) {
         this.dom.menuMessage.innerText = msg;
         setTimeout(() => this.dom.menuMessage.innerText = "", 3000);
     }
-
     toggleMenu() { this.dom.menu.classList.toggle('open'); }
-
     shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -454,8 +379,7 @@ class CircuitWord {
     }
 }
 
-// Start Game
 document.addEventListener('DOMContentLoaded', () => {
-    window.game = new CircuitWord(); // Expose for debugging if needed
+    window.game = new CircuitWord();
     window.game.init();
 });
