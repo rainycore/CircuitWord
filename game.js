@@ -104,6 +104,30 @@ class CircuitWord {
             if (window.innerWidth > 768) this.dom.input.focus();
             this.dom.input.addEventListener("keypress", this.handleKeyPress);
         }
+        
+        // Inside bindEvents()
+        document.addEventListener("keydown", (e) => this.handleGlobalKeyDown(e));
+
+        // Add this new method to the CircuitWord class
+        handleGlobalKeyDown(e) {
+            // Ignore if user is typing in a menu input
+            if (e.target.tagName === 'INPUT' && e.target.id !== 'word-input-typed') return;
+
+            const key = e.key.toUpperCase();
+
+            // Handle Letter Typing
+            if (/^[A-Z]$/.test(key)) {
+                this.handleLetterInput(key);
+            } 
+            // Handle Deletion
+            else if (e.key === "Backspace") {
+                this.deleteLastLetter();
+            } 
+            // Handle Submission
+            else if (e.key === "Enter") {
+                this.submitWord();
+            }
+        }
     }
 
     handleKeyPress(e) {
@@ -210,29 +234,33 @@ class CircuitWord {
 
     // --- Game Logic: Gameplay ---
 
-    handleLetterClick(letter, btnElement) {
+    handleLetterInput(letter) {
         this.clearMessage();
 
-        // Rule 1: Cannot click same letter immediately
+        // Check if letter exists on the board
+        if (!this.state.allLetters.includes(letter)) {
+            return this.showMessage(`"${letter}" is not on the board`);
+        }
+
+        const btnElement = document.getElementById(`btn-${letter}`);
+
+        // Rule: Cannot use the same letter immediately
         if (this.state.currentPath.length > 0) {
             const last = this.state.currentPath[this.state.currentPath.length - 1];
             if (last.letter === letter) return;
-            
-            // Rule 2: Cannot click same side immediately
+
+            // Rule: Cannot use the same side consecutively
             if (this.findSide(last.letter) === this.findSide(letter)) {
                 return this.showMessage("Cannot use same side consecutively");
             }
         }
 
-        // Rule 3: Must start with required letter
+        // Rule: New words must start with the last letter of the previous word
         if (this.state.currentPath.length === 0 && this.state.lastLetter) {
             if (letter !== this.state.lastLetter) {
                 return this.showMessage(`Must start with "${this.state.lastLetter}"`);
             }
         }
-
-        // Rule 4: Chaining check (Start of new word cannot match side of previous word's start)
-        // (This rule varies by implementation, adhering to standard Letter Boxed rules here: just adjacent checks)
 
         this.addToPath(letter, btnElement);
     }
