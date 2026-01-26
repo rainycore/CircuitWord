@@ -75,12 +75,14 @@ body {
     pointer-events: none;
 }
 
-/* Canvas for connection lines */
 #line-canvas {
     position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
     pointer-events: none;
-    z-index: 1;
+    z-index: 1; /* Keep it low so it's behind the buttons */
 }
 
 /* --- Letter Buttons --- */
@@ -99,7 +101,8 @@ body {
     box-shadow: 0 0 10px rgba(15, 23, 42, 0.9);
     transition: all 0.15s ease;
     margin: 3px;
-    z-index: 3;
+    z-index: 5; /* Higher than the canvas */
+    position: relative;
     user-select: none;
     touch-action: manipulation;
 }
@@ -151,7 +154,8 @@ body {
     padding: 14px 16px;
     background: transparent; /* Removed the background box */
     border: none;             /* Removed the border */
-    z-index: 6;
+    z-index: 10; /* Highest priority so lines never cross over the text */
+    position: relative;
 }
 
 .game-header { text-align: center; margin-bottom: 6px; }
@@ -192,24 +196,33 @@ body {
 
 #message { min-height: 1.2em; font-size: 0.85rem; color: var(--accent-yellow); text-align: center; }
 
-/* --- Hamburger Button Styled as Logo --- */
+#word-input-typed {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+    opacity: 0;
+    height: 0;
+    width: 0;
+    border: none;
+    pointer-events: none;
+}
+
+/* --- Hamburger & Menu --- */
 .hamburger-button {
     position: absolute; top: 15px; left: 15px;
     width: 60px; height: 60px;
     background: none; border: none; padding: 0;
     cursor: pointer; z-index: 1001;
-    filter: drop-shadow(0 0 8px var(--shadow-glow));
-    transition: transform 0.2s ease;
 }
-.hamburger-button:hover { transform: scale(1.1); }
 .hamburger-button img { width: 100%; height: 100%; object-fit: cover; }
+.hamburger-button:hover { opacity: 0.8; }
 
 .side-menu {
     position: fixed; top: 0; left: -280px;
     width: 250px; height: 100%;
-    background-color: #0f172a;
+    background-color: var(--bg-menu);
     color: white; padding: 100px 20px 20px 20px;
-    box-shadow: 2px 0 15px rgba(0,0,0,0.5);
+    box-shadow: 2px 0 5px rgba(0,0,0,0.2);
     transition: left 0.3s ease-in-out;
     z-index: 1000; box-sizing: border-box;
     display: flex; flex-direction: column;
@@ -220,12 +233,26 @@ body {
     background: none; border: none; color: #f8f9fa;
     padding: 15px 0; text-align: left; font-size: 1.1em;
     cursor: pointer; width: 100%;
-    border-bottom: 1px solid #334155; margin-bottom: 10px;
+    border-bottom: 1px solid #495057; margin-bottom: 10px;
 }
-.menu-item:hover { background-color: #1e293b; }
+.menu-item:hover { background-color: #495057; }
 
-#set-custom-button { background-color: #007bff; text-align: center; margin-top: 15px; font-weight: bold; border-radius: 5px; }
+.custom-letter-section {
+    border-top: 1px solid #495057; border-bottom: 1px solid #495057;
+    padding: 15px 0; margin: 10px 0 20px 0;
+}
+.custom-letter-section label { display: block; margin-bottom: 10px; font-size: 0.9em; color: var(--text-muted); }
+.custom-inputs-wrapper { display: flex; flex-direction: column; gap: 8px; }
+.custom-input {
+    width: 100%; padding: 8px;
+    border: 1px solid #6c757d; background-color: #495057;
+    color: white; border-radius: 4px; font-size: 1em;
+    text-transform: uppercase; text-align: center; letter-spacing: 2px;
+    box-sizing: border-box;
+}
+#set-custom-button { background-color: #007bff; text-align: center; margin-top: 15px; font-weight: bold; border-bottom: none; border-radius: 5px; }
 #set-custom-button:hover { background-color: #0056b3; }
+.menu-message { font-size: 0.85em; color: var(--accent-yellow); margin-top: 5px; min-height: 1em; }
 
 /* --- Mobile / Responsive --- */
 @media screen and (max-width: 768px), screen and (max-height: 768px) {
