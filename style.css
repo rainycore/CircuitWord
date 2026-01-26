@@ -1,22 +1,20 @@
 :root {
-    /* Color Palette */
-    --bg-dark: #020617;
-    --bg-panel: #0f172a;
-    --bg-button: #1d283a;
-    --bg-button-hover: #0f172a;
-    --bg-menu: #343a40;
+    /* Logo-Inspired Palette */
+    --bg-dark: #061e5e;            /* Deep circuit blue */
+    --bg-panel: #0a2e8c;           /* Lighter circuit blue */
+    --bg-button: #1e4bb5;          /* Button blue from logo text */
+    --bg-button-hover: #2d63e0;
     
-    --accent-blue: #38bdf8;
-    --accent-green: #22c55e;
-    --accent-yellow: #facc15;
-    --accent-orange: #f97316;
+    --accent-blue: #a5d8ff;        /* Bubbly light blue from 'Circuit' text */
+    --accent-green: #34d399;       /* Trace green */
+    --accent-yellow: #fef08a;      /* Lightbulb yellow glow */
+    --accent-orange: #fbbf24;      /* Lightbulb filament orange */
     
-    --text-main: #e5e7eb;
-    --text-muted: #9ca3af;
-    --text-highlight: #a5b4fc;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
     
-    --border-color: rgba(56, 189, 248, 0.7);
-    --shadow-glow: rgba(56, 189, 248, 0.4);
+    --border-color: #38bdf8;       /* Bright trace blue */
+    --shadow-glow: rgba(56, 189, 248, 0.6);
 }
 
 /* --- Global / Background --- */
