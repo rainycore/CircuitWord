@@ -254,44 +254,22 @@ body {
 #set-custom-button:hover { background-color: #0056b3; }
 .menu-message { font-size: 0.85em; color: var(--accent-yellow); margin-top: 5px; min-height: 1em; }
 
-@media screen and (max-width: 600px) {
-    body {
-        padding: 10px;
-        align-items: flex-start; /* Prevents vertical centering issues on small phones */
-        padding-top: 60px;       /* Space for the logo/hamburger */
-    }
-
+@media screen and (max-width: 768px), screen and (max-height: 768px) {
     .game-container {
-        width: 100%;
-        aspect-ratio: 1 / 1;    /* Keeps the board square */
-        height: auto;
-        padding: 10px;
-        grid-template-rows: 60px 1fr 60px;
-        grid-template-columns: 60px 1fr 60px;
-        border-radius: 15px;
+        width: min(95vw, 95vh, 600px);
+        height: min(95vw, 95vh, 600px);
+        padding: 5px;
+        grid-template-rows: 50px 1fr 50px;
+        grid-template-columns: 50px 1fr 50px;
+        border-radius: 16px;
     }
-
-    .letter-button {
-        width: 45px;
-        height: 45px;
-        font-size: 1.2rem;
-        border-radius: 12px;
-        margin: 2px;
-    }
-
-    .hamburger-button {
-        width: 50px;
-        height: 50px;
-        top: 10px;
-        left: 10px;
-    }
-
-    .game-title {
-        font-size: 1.1rem;
-    }
-
-    .controls button {
-        padding: 6px 8px;
-        font-size: 0.7rem;
-    }
+    .letter-button { width: 38px; height: 38px; font-size: 1.1em; margin: 1px; border-radius: 10px; }
+    .center-display { padding: 8px; }
+    .game-title { font-size: 1rem; }
+    .game-tagline { display: none; }
+    .game-stats { font-size: 0.7rem; margin-top: 5px; }
+    #current-word-display { font-size: 1.2em; margin-bottom: 5px; padding-bottom: 5px; }
+    .controls { flex-wrap: wrap; gap: 5px; }
+    .controls button { padding: 6px 10px; font-size: 0.7rem; }
+    .hamburger-button { width: 50px; height: 50px; top: 5px; left: 5px; }
 }
