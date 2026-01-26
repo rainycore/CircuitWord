@@ -1,11 +1,11 @@
 :root {
     /* Logo-Inspired Palette */
     --bg-dark: #061e5e;            /* Deep circuit blue base */
-    --bg-panel: #0a2e8c;           /* Lighter circuit blue for the center display */
+    --bg-panel: #0a2e8c;           /* Lighter circuit blue for context */
     --bg-button: #1d283a;          /* Button base blue */
     --bg-button-hover: #0f172a;
     
-    --accent-blue: #38bdf8;        /* Bubbly light blue from 'Circuit' text */
+    --accent-blue: #38bdf8;        /* Bubbly light blue from logo text */
     --accent-green: #22c55e;       /* Trace green highlight */
     --accent-yellow: #facc15;      /* Lightbulb yellow glow */
     --accent-orange: #f97316;      /* Highlight orange */
@@ -28,7 +28,7 @@ body {
     margin: 0;
     overflow-x: hidden;
     background-color: var(--bg-dark);
-    /* Circuit Design Background Replacement for Polka Dots */
+    /* Circuit Design Background */
     background-image:
         linear-gradient(rgba(56, 189, 248, 0.1) 1px, transparent 1px),
         linear-gradient(90deg, rgba(56, 189, 248, 0.1) 1px, transparent 1px);
@@ -47,7 +47,7 @@ body {
     box-shadow:
         0 0 0 1px rgba(15, 23, 42, 0.9),
         0 0 35px var(--shadow-glow),
-        0 0 60px rgba(56, 189, 248, 0.2);
+        0 0 80px rgba(56, 189, 248, 0.2);
     position: relative;
     display: grid;
     grid-template-rows: 80px 1fr 80px;
@@ -61,7 +61,7 @@ body {
     overflow: hidden;
 }
 
-/* Enhanced Circuit Trace Overlay */
+/* Circuit Trace Overlay */
 .game-container::before {
     content: "";
     position: absolute;
@@ -71,11 +71,11 @@ body {
         linear-gradient(210deg, rgba(34, 197, 94, 0.2) 1px, transparent 0);
     background-size: 46px 46px;
     mix-blend-mode: screen;
-    opacity: 0.5; /* Increased visibility for circuit vibe */
+    opacity: 0.5;
     pointer-events: none;
 }
 
-/* Canvas */
+/* Canvas for connection lines */
 #line-canvas {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -116,7 +116,6 @@ body {
     box-shadow: 0 0 20px rgba(34, 197, 94, 0.9);
 }
 
-/* Mimics the glowing yellow lightbulb in the logo */
 .letter-button.last-selected {
     background: var(--accent-yellow);
     color: #000;
@@ -143,16 +142,15 @@ body {
     width: 100%; height: 100%;
 }
 
-/* --- Center Chip --- */
+/* --- Center Display (Updated to remove the box) --- */
 .center-display {
     grid-area: center;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     padding: 14px 16px;
-    background: rgba(15, 23, 42, 0.95);
-    border-radius: 18px;
-    border: 1px solid rgba(148, 163, 184, 0.5);
+    background: transparent; /* Removed the background box */
+    border: none;             /* Removed the border */
     z-index: 6;
 }
 
@@ -164,7 +162,7 @@ body {
 #current-word-display {
     font-size: 1.5em; font-weight: bold; letter-spacing: 0.2em;
     color: var(--text-main); text-align: center;
-    border-bottom: 1px solid #1f2937;
+    border-bottom: 1px solid rgba(56, 189, 248, 0.3);
     padding-bottom: 6px; margin-bottom: 6px;
 }
 #current-word-display span { color: var(--accent-blue); }
@@ -194,13 +192,13 @@ body {
 
 #message { min-height: 1.2em; font-size: 0.85rem; color: var(--accent-yellow); text-align: center; }
 
-/* --- Hamburger & Menu --- */
+/* --- Hamburger Button Styled as Logo --- */
 .hamburger-button {
     position: absolute; top: 15px; left: 15px;
     width: 60px; height: 60px;
     background: none; border: none; padding: 0;
     cursor: pointer; z-index: 1001;
-    filter: drop-shadow(0 0 8px var(--shadow-glow)); /* Makes logo glow */
+    filter: drop-shadow(0 0 8px var(--shadow-glow));
     transition: transform 0.2s ease;
 }
 .hamburger-button:hover { transform: scale(1.1); }
