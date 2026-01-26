@@ -1,20 +1,21 @@
 :root {
     /* Logo-Inspired Palette */
-    --bg-dark: #061e5e;            /* Deep circuit blue */
-    --bg-panel: #0a2e8c;           /* Lighter circuit blue */
-    --bg-button: #1e4bb5;          /* Button blue from logo text */
-    --bg-button-hover: #2d63e0;
+    --bg-dark: #061e5e;            /* Deep circuit blue base */
+    --bg-panel: #0a2e8c;           /* Lighter circuit blue for the center display */
+    --bg-button: #1d283a;          /* Button base blue */
+    --bg-button-hover: #0f172a;
     
-    --accent-blue: #a5d8ff;        /* Bubbly light blue from 'Circuit' text */
-    --accent-green: #34d399;       /* Trace green */
-    --accent-yellow: #fef08a;      /* Lightbulb yellow glow */
-    --accent-orange: #fbbf24;      /* Lightbulb filament orange */
+    --accent-blue: #38bdf8;        /* Bubbly light blue from 'Circuit' text */
+    --accent-green: #22c55e;       /* Trace green highlight */
+    --accent-yellow: #facc15;      /* Lightbulb yellow glow */
+    --accent-orange: #f97316;      /* Highlight orange */
     
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
+    --text-main: #e5e7eb;
+    --text-muted: #9ca3af;
+    --text-highlight: #a5b4fc;
     
-    --border-color: #38bdf8;       /* Bright trace blue */
-    --shadow-glow: rgba(56, 189, 248, 0.6);
+    --border-color: rgba(56, 189, 248, 0.7);
+    --shadow-glow: rgba(56, 189, 248, 0.5);
 }
 
 /* --- Global / Background --- */
@@ -27,11 +28,11 @@ body {
     margin: 0;
     overflow-x: hidden;
     background-color: var(--bg-dark);
+    /* Circuit Design Background Replacement for Polka Dots */
     background-image:
-        radial-gradient(circle at 1px 1px, #0ea5e9 1px, transparent 0),
-        radial-gradient(circle at 1px 1px, #22c55e 1px, transparent 0);
-    background-size: 40px 40px;
-    background-position: 0 0, 20px 20px;
+        linear-gradient(rgba(56, 189, 248, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 189, 248, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
 }
 
 /* --- Game Container --- */
@@ -40,13 +41,13 @@ body {
     height: 600px;
     padding: 18px;
     box-sizing: border-box;
-    background: radial-gradient(circle at top left, var(--bg-panel), var(--bg-dark) 55%);
+    background: radial-gradient(circle at center, var(--bg-panel), var(--bg-dark) 85%);
     border-radius: 26px;
-    border: 1px solid var(--border-color);
+    border: 2px solid var(--border-color);
     box-shadow:
         0 0 0 1px rgba(15, 23, 42, 0.9),
-        0 0 25px var(--shadow-glow),
-        0 0 60px rgba(34, 197, 94, 0.3);
+        0 0 35px var(--shadow-glow),
+        0 0 60px rgba(56, 189, 248, 0.2);
     position: relative;
     display: grid;
     grid-template-rows: 80px 1fr 80px;
@@ -60,17 +61,17 @@ body {
     overflow: hidden;
 }
 
-/* Trace Overlay */
+/* Enhanced Circuit Trace Overlay */
 .game-container::before {
     content: "";
     position: absolute;
     inset: 0;
     background-image:
-        linear-gradient(120deg, rgba(56, 189, 248, 0.16) 1px, transparent 0),
-        linear-gradient(210deg, rgba(34, 197, 94, 0.16) 1px, transparent 0);
+        linear-gradient(120deg, rgba(56, 189, 248, 0.2) 1px, transparent 0),
+        linear-gradient(210deg, rgba(34, 197, 94, 0.2) 1px, transparent 0);
     background-size: 46px 46px;
     mix-blend-mode: screen;
-    opacity: 0.35;
+    opacity: 0.5; /* Increased visibility for circuit vibe */
     pointer-events: none;
 }
 
@@ -85,8 +86,8 @@ body {
 /* --- Letter Buttons --- */
 .letter-button {
     width: 55px; height: 55px;
-    border-radius: 14px;
-    border: 1px solid var(--border-color);
+    border-radius: 20px; /* Bubbly shape to match logo font */
+    border: 2px solid var(--border-color);
     background: radial-gradient(circle at 30% 20%, var(--bg-button), var(--bg-dark) 70%);
     color: var(--text-main);
     font-size: 1.5em;
@@ -105,26 +106,28 @@ body {
 
 .letter-button:hover {
     background: radial-gradient(circle at 30% 20%, var(--bg-button-hover), var(--bg-dark) 70%);
-    box-shadow: 0 0 10px var(--shadow-glow);
+    box-shadow: 0 0 15px var(--shadow-glow);
+    transform: scale(1.05);
 }
-
-.letter-button:active { transform: translateY(1px) scale(0.97); }
 
 .letter-button.selected {
     background: var(--accent-green);
     color: var(--bg-dark);
-    box-shadow: 0 0 16px rgba(34, 197, 94, 0.9);
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.9);
 }
 
+/* Mimics the glowing yellow lightbulb in the logo */
 .letter-button.last-selected {
-    border: 2px solid var(--accent-yellow);
-    box-shadow: 0 0 20px rgba(250, 204, 21, 0.9);
+    background: var(--accent-yellow);
+    color: #000;
+    border: 3px solid var(--accent-orange);
+    box-shadow: 0 0 25px var(--accent-yellow);
 }
 
 .letter-button.used {
     background: #1e293b;
-    color: #fde68a;
-    box-shadow: 0 0 16px rgba(249, 115, 22, 0.7);
+    color: var(--accent-yellow);
+    box-shadow: 0 0 16px rgba(249, 115, 22, 0.6);
 }
 
 /* --- Grid Areas --- */
@@ -156,7 +159,7 @@ body {
 .game-header { text-align: center; margin-bottom: 6px; }
 .game-title { font-size: 1.3rem; font-weight: 700; color: var(--text-main); letter-spacing: 0.05em; }
 .game-tagline { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
-.game-stats { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-highlight); margin-top: 8px; }
+.game-stats { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--accent-blue); margin-top: 8px; }
 
 #current-word-display {
     font-size: 1.5em; font-weight: bold; letter-spacing: 0.2em;
@@ -165,8 +168,6 @@ body {
     padding-bottom: 6px; margin-bottom: 6px;
 }
 #current-word-display span { color: var(--accent-blue); }
-
-#word-input-typed { opacity: 0; height: 0; border: none; padding: 0; margin: 0; }
 
 .controls { display: flex; justify-content: center; gap: 6px; margin: 6px 0 8px 0; }
 .controls button {
@@ -199,16 +200,18 @@ body {
     width: 60px; height: 60px;
     background: none; border: none; padding: 0;
     cursor: pointer; z-index: 1001;
+    filter: drop-shadow(0 0 8px var(--shadow-glow)); /* Makes logo glow */
+    transition: transform 0.2s ease;
 }
+.hamburger-button:hover { transform: scale(1.1); }
 .hamburger-button img { width: 100%; height: 100%; object-fit: cover; }
-.hamburger-button:hover { opacity: 0.8; }
 
 .side-menu {
     position: fixed; top: 0; left: -280px;
     width: 250px; height: 100%;
-    background-color: var(--bg-menu);
+    background-color: #0f172a;
     color: white; padding: 100px 20px 20px 20px;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+    box-shadow: 2px 0 15px rgba(0,0,0,0.5);
     transition: left 0.3s ease-in-out;
     z-index: 1000; box-sizing: border-box;
     display: flex; flex-direction: column;
@@ -219,26 +222,12 @@ body {
     background: none; border: none; color: #f8f9fa;
     padding: 15px 0; text-align: left; font-size: 1.1em;
     cursor: pointer; width: 100%;
-    border-bottom: 1px solid #495057; margin-bottom: 10px;
+    border-bottom: 1px solid #334155; margin-bottom: 10px;
 }
-.menu-item:hover { background-color: #495057; }
+.menu-item:hover { background-color: #1e293b; }
 
-.custom-letter-section {
-    border-top: 1px solid #495057; border-bottom: 1px solid #495057;
-    padding: 15px 0; margin: 10px 0 20px 0;
-}
-.custom-letter-section label { display: block; margin-bottom: 10px; font-size: 0.9em; color: var(--text-muted); }
-.custom-inputs-wrapper { display: flex; flex-direction: column; gap: 8px; }
-.custom-input {
-    width: 100%; padding: 8px;
-    border: 1px solid #6c757d; background-color: #495057;
-    color: white; border-radius: 4px; font-size: 1em;
-    text-transform: uppercase; text-align: center; letter-spacing: 2px;
-    box-sizing: border-box;
-}
-#set-custom-button { background-color: #007bff; text-align: center; margin-top: 15px; font-weight: bold; border-bottom: none; border-radius: 5px; }
+#set-custom-button { background-color: #007bff; text-align: center; margin-top: 15px; font-weight: bold; border-radius: 5px; }
 #set-custom-button:hover { background-color: #0056b3; }
-.menu-message { font-size: 0.85em; color: var(--accent-yellow); margin-top: 5px; min-height: 1em; }
 
 /* --- Mobile / Responsive --- */
 @media screen and (max-width: 768px), screen and (max-height: 768px) {
@@ -250,13 +239,6 @@ body {
         grid-template-columns: 50px 1fr 50px;
         border-radius: 16px;
     }
-    .letter-button { width: 38px; height: 38px; font-size: 1.1em; margin: 1px; border-radius: 10px; }
-    .center-display { padding: 8px; }
-    .game-title { font-size: 1rem; }
-    .game-tagline { display: none; }
-    .game-stats { font-size: 0.7rem; margin-top: 5px; }
-    #current-word-display { font-size: 1.2em; margin-bottom: 5px; padding-bottom: 5px; }
-    .controls { flex-wrap: wrap; gap: 5px; }
-    .controls button { padding: 6px 10px; font-size: 0.7rem; }
+    .letter-button { width: 38px; height: 38px; font-size: 1.1em; margin: 1px; border-radius: 12px; }
     .hamburger-button { width: 50px; height: 50px; top: 5px; left: 5px; }
 }
